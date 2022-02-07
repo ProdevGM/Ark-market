@@ -279,7 +279,6 @@ include '../inc/nav.inc.php';
             }
 ?>
 
-
 <?php // Bloc précision des créatures (niveau et sexe)
             if($type_produit == 'creature'){
 ?>

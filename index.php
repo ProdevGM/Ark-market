@@ -128,7 +128,7 @@ include 'inc/nav.inc.php';
 								</div>
 								<div class="detail col-6 row justify-content-between align-items-center initmarg">
 										<img class="col-3" src="<?= URL ?>image/site/caracteristique/temporaire.png" alt="">
-										<p class="col-8"><?= $creature['oxygene'] ?></p>
+										<p class="col-8"><?= $creature['oxygène'] ?></p>
 								</div>
 								<div class="detail col-6 row justify-content-between align-items-center initmarg">
 										<img class="col-3" src="<?= URL ?>image/site/caracteristique/temporaire.png" alt="">
@@ -190,7 +190,7 @@ include 'inc/nav.inc.php';
 									<p class="niveau align-middle d-sm-inline-block"><?= ' '.$selle['armure'] ?></p>
 								</div>
 								<div class="block-qualite text-center text-lg-left d-none d-md-block col-md-12">
-									<p class="qualite"><?= $selle['qualite'] ?></p>
+									<p class="qualite"><?= $selle['qualité'] ?></p>
 								</div>
 							</div>
 							<div class="block-prix text-right text-md-center col-4 col-md-12 <?= ($selle['prix2'] != NULL) ? 'row' : ''; ?> initmarg">
@@ -233,10 +233,10 @@ include 'inc/nav.inc.php';
 								</div>
 								<div class="block-armure text-center text-lg-left col-4 col-sm-5 col-md-12">
 									<p class="align-middle d-none d-sm-inline-block">Dégât :</p>
-									<p class="niveau align-middle d-sm-inline-block"><?= ' '.$arme['degat'] ?></p>
+									<p class="niveau align-middle d-sm-inline-block"><?= ' '.$arme['dégât'] ?></p>
 								</div>
 								<div class="block-qualite text-center text-lg-left d-none d-md-block col-md-12">
-									<p class="qualite"><?= ucfirst($arme['qualite']) ?></p>
+									<p class="qualite"><?= ucfirst($arme['qualité']) ?></p>
 								</div>
 							</div>
 							<div class="block-prix text-right text-md-center col-4 col-md-12 <?= ($arme['prix2'] != NULL) ? 'row' : ''; ?> initmarg">
@@ -291,7 +291,7 @@ include 'inc/nav.inc.php';
 									<p class="niveau align-middle d-sm-inline-block"><?= ' '.$armure['chaleur'] ?></p>
 								</div>
 								<div class="block-qualite text-center text-lg-left d-none d-md-block col-md-12">
-									<p class="qualite"><?= ucfirst($armure['qualite']) ?></p>
+									<p class="qualite"><?= ucfirst($armure['qualité']) ?></p>
 								</div>
 							</div>
 							<div class="block-prix text-right text-md-center col-4 col-sm-3 col-md-12 <?= ($armure['prix2'] != NULL) ? 'row' : ''; ?> initmarg">

@@ -45,7 +45,7 @@ include '../inc/nav.inc.php';
                                 <div class="initpad caracteristique d-none d-md-block col-md-5 col-lg-4">
                                     <p class="initpad d-inline"><?= $total_creature['vie'] ?> / </p>
                                     <p class="initpad d-inline"><?= $total_creature['energie'] ?> / </p>
-                                    <p class="initpad d-inline"><?= $total_creature['oxygene'] ?> / </p>
+                                    <p class="initpad d-inline"><?= $total_creature['oxygène'] ?> / </p>
                                     <p class="initpad d-inline"><?= $total_creature['nourriture'] ?> / </p>
                                     <p class="initpad d-inline"><?= $total_creature['poids'] ?> / </p>
                                     <p class="initpad d-inline"><?= $total_creature['attaque'] ?> / </p>
@@ -83,7 +83,7 @@ include '../inc/nav.inc.php';
 
                                 <p class="initpad col-4 col-md-2"><?= ucfirst($total_selle['nom']) ?></p>
                                 <p class="initpad col-2 col-lg-1"><?= $total_selle['armure'] ?></p>
-                                <p class="initpad d-none d-md-block col-md-5 col-lg-6"><?= ucfirst($total_selle['qualite']) ?></p>
+                                <p class="initpad d-none d-md-block col-md-5 col-lg-6"><?= ucfirst($total_selle['qualité']) ?></p>
                                 <p class="initpad col-4 col-md-2"><?= $total_selle['date_creation'] ?></p>
                                 <div class="initpad action col-2 col-md-1 row justify-content-end">
                                     <a href="#" class="col-2"><img src="<?= URL ?>/image/site/crayon_vert.png" alt=""></a>
@@ -115,8 +115,8 @@ include '../inc/nav.inc.php';
                         <button type="button" class="initmarg produit row">
 
                                 <p class="initpad col-4 col-md-2"><?= ucfirst($total_arme['nom']) ?></p>
-                                <p class="initpad col-2 col-lg-1"><?= $total_arme['degat'] ?></p>
-                                <p class="initpad d-none d-md-block col-md-5 col-lg-6"><?= ucfirst($total_arme['qualite']) ?></p>
+                                <p class="initpad col-2 col-lg-1"><?= $total_arme['dégât'] ?></p>
+                                <p class="initpad d-none d-md-block col-md-5 col-lg-6"><?= ucfirst($total_arme['qualité']) ?></p>
                                 <p class="initpad col-4 col-md-2"><?= $total_arme['date_creation'] ?></p>
                                 <div class="initpad action col-2 col-md-1 row justify-content-end">
                                     <a href="#" class="col-2"><img src="<?= URL ?>/image/site/crayon_vert.png" alt=""></a>
@@ -149,7 +149,7 @@ include '../inc/nav.inc.php';
 
                                 <p class="initpad col-4 col-md-2"><?= ucfirst($total_armure['nom']) ?></p>
                                 <p class="initpad col-2 col-lg-1"><?= $total_armure['armure'] ?></p>
-                                <p class="initpad d-none d-md-block col-md-2 col-lg-3"><?= ucfirst($total_armure['qualite']) ?></p>
+                                <p class="initpad d-none d-md-block col-md-2 col-lg-3"><?= ucfirst($total_armure['qualité']) ?></p>
                                 <div class="initpad caracteristique d-none d-md-flex col-md-3">
                                     <p class="initpad col-6"><?= $total_armure['froid'] ?></p>
                                     <p class="initpad col-6"><?= $total_armure['chaleur'] ?></p>
