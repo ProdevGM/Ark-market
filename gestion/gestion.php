@@ -137,7 +137,8 @@ include '../inc/nav.inc.php';
 
             <div class="onglet row align-items-center">
                 <button class="col-10 text-end" type="button" data-bs-toggle="collapse" data-bs-target="#total-armure" aria-expanded="false" aria-controls="total-armure">MES ARMURES</button>
-                <a class="col-2 text-center" href="<?= URL ?>gestion/ajout.php?action=armure">Ajouter un produit</a>
+                <a class="col-2 text-center" href="<?= URL ?>
+                ">Ajouter un produit</a>
             </div>
 
             <div class="collapse block-produit" id="total-armure">

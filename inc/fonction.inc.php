@@ -26,7 +26,7 @@ function user_is_connect() {
 } */
 
 
-/* vd($_SESSION); */
+vd($_SESSION);
 /* vd($_COOKIE); */
 vd($_POST);
 

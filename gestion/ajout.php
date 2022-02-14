@@ -28,7 +28,6 @@ $poids = '';
 $attaque = '';
 $vitesse = '';
 
-
 // Si le formulaire a été soumis 
 if(isset($_POST['creer'])){
 
@@ -39,6 +38,7 @@ if(isset($_POST['creer'])){
         $nom = trim($_POST['nom']);
         $description = trim($_POST['description']);
         $prix1 = trim($_POST['prix1']);
+
 
 
         
@@ -52,6 +52,7 @@ if(isset($_POST['creer'])){
                                         && isset($_POST['niveau'])
                                         && isset($_POST['sexe'])){
 
+
             $vie = trim($_POST['vie']);
             $energie = trim($_POST['energie']);
             $oxygene = trim($_POST['oxygene']);
@@ -61,8 +62,37 @@ if(isset($_POST['creer'])){
             $vitesse = trim($_POST['vitesse']);
             $niveau = trim($_POST['niveau']);
             $sexe = $_POST['sexe'];
+    echo $nom;
+/* vd($tab_creature); */
+
+            $test = array_search($nom, $tab_creature['terrestre']);
+            vd($test);
+            /* 
+            CONTROLE DES VARIABLES D'ENTREES
+            ...
+            */
+
+/*             if(empty($msg)){
+
+                $creation = $pdo->prepare("INSERT INTO creature (id_dino, nom, categorie, sexe, niveau, vie, energie, oxygène, nourriture, poids, attaque, vitesse, prix, monnaie, description, date_creation, id_serveur, id_utilisateur)
+                                                        VALUES (NULL, :nom, :categorie, :sexe, :niveau, :vie, :energie, :oxygène, :nourriture, :poids, :attaque, :vitesse, :prix1, :monnaie, :description, CURDATE(), $_SESSION['utilisateur']['id_serveur'], $_SESSION['utilisateur']['id_utilisateur'])");
+
+                $creation->bindParam(':nom', $nom, PDO::PARAM_STR);
+                $creation->bindParam(':sexe', $sexe, PDO::PARAM_STR);
+                $creation->bindParam(':niveau', $niveau, PDO::PARAM_STR);
+                $creation->bindParam(':vie', $vie, PDO::PARAM_STR);
+                $creation->bindParam(':energie', $energie, PDO::PARAM_STR);
+                $creation->bindParam(':oxygène', $oxygène, PDO::PARAM_STR);
+                $creation->bindParam(':nourriture', $nourriture, PDO::PARAM_STR);
+                $creation->bindParam(':poids', $poids, PDO::PARAM_STR);
+                $creation->bindParam(':attaque', $attaque, PDO::PARAM_STR);
+                $creation->bindParam(':vitesse', $vitesse, PDO::PARAM_STR);
+                $creation->bindParam(':prix1', $prix1, PDO::PARAM_STR);
+                $creation->bindParam(':monnaie', $monnaie, PDO::PARAM_STR);
+                $creation->bindParam(':description', $description, PDO::PARAM_STR);
 
 
+            } */
 
         }elseif($_GET['action'] == 'selle' && isset($_POST['type'])
                                         && isset($_POST['qualité'])
