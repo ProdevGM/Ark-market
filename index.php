@@ -25,31 +25,31 @@ if(empty($_SESSION['utilisateur']['id_serveur'])){
 
 // Prise en compte de la catégorie pour l'affichage des produits
 if(isset($_GET['action']) && isset($_GET['categorie']) && !empty($_GET['categorie'])){
-	$requete_creature = $requete_creature." AND categorie = '".$_GET['categorie']."'";
-	$requete_selle = $requete_selle." AND categorie = '".$_GET['categorie']."'";
-	$requete_arme = $requete_arme." AND categorie = '".$_GET['categorie']."'";
-	$requete_armure = $requete_armure." AND categorie = '".$_GET['categorie']."'";
+	$requete_creature .= " AND categorie = '".$_GET['categorie']."'";
+	$requete_selle .= " AND categorie = '".$_GET['categorie']."'";
+	$requete_arme .= " AND categorie = '".$_GET['categorie']."'";
+	$requete_armure .= " AND categorie = '".$_GET['categorie']."'";
 }
 
 // Classement par date de création DESC
 if(empty($_SESSION['utilisateur']['id_serveur'])){
-	$requete_creature = $requete_creature." ORDER BY c.date_creation DESC";
-	$requete_selle = $requete_selle." ORDER BY se.date_creation DESC";
-	$requete_arme = $requete_arme." ORDER BY a.date_creation DESC";
-	$requete_armure = $requete_armure." ORDER BY a.date_creation DESC";
+	$requete_creature .= " ORDER BY c.date_creation DESC";
+	$requete_selle .= " ORDER BY se.date_creation DESC";
+	$requete_arme .= " ORDER BY a.date_creation DESC";
+	$requete_armure .= " ORDER BY a.date_creation DESC";
 }else{
-	$requete_creature = $requete_creature." ORDER BY date_creation DESC";
-	$requete_selle = $requete_selle." ORDER BY date_creation DESC";
-	$requete_arme = $requete_arme." ORDER BY date_creation DESC";
-	$requete_armure = $requete_armure." ORDER BY date_creation DESC";
+	$requete_creature .= " ORDER BY date_creation DESC";
+	$requete_selle .= " ORDER BY date_creation DESC";
+	$requete_arme .= " ORDER BY date_creation DESC";
+	$requete_armure .= " ORDER BY date_creation DESC";
 }
 
 // Uniquement les 3 derniers produits ajoutés sur la page d'accueil
 if(!isset($_GET['action'])){
-	$requete_creature = $requete_creature.' LIMIT 3';
-	$requete_selle = $requete_selle.' LIMIT 3';
-	$requete_arme = $requete_arme.' LIMIT 3';
-	$requete_armure = $requete_armure.' LIMIT 3';
+	$requete_creature .= ' LIMIT 3';
+	$requete_selle .= ' LIMIT 3';
+	$requete_arme .= ' LIMIT 3';
+	$requete_armure .= ' LIMIT 3';
 }
 
 
@@ -90,10 +90,8 @@ include 'inc/nav.inc.php';
 ?>
 							<a href="<?= URL ?>index.php?action=<?= $_GET['action'] ?>&categorie=<?= $valeur ?>#<?= $_GET['action'] ?>" class="categorie text-center col-auto col-xl-8"><?= ucfirst($valeur) ?></a>
 <?php
-						}
-						
+						}		
 ?>
-
 					</div>
 				</section>
 <?php

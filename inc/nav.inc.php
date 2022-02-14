@@ -21,9 +21,15 @@
             <li class="nav-item">
                 <a id="armure" class="connecter nav-link" href="<?= URL ?>index.php?action=armure">ARMURES</a>
             </li>
-            <li class="nav-item">
-                <a id="gestion" class="connecter nav-link" href="<?= URL ?>gestion/gestion.php">Mon étale</a>
-            </li>
+<?php
+            if(isset($_SESSION['utilisateur'])){
+?>
+                <li class="nav-item">
+                    <a id="gestion" class="connecter nav-link" href="<?= URL ?>gestion/gestion.php">Mon étale</a>
+                </li>
+<?php
+            }
+?>
             </ul>
         </div>
     </div>

@@ -5,7 +5,7 @@ include '../inc/fonction.inc.php';
 
 // Déclaration des variables
 $tab_datalist = ''; 
-$type_produit = ''; // Permettra d'afficher les différents champs du formaulaire en fonction du type d'objet créé
+$type_produit = ''; // Permettra d'afficher les différents champs du formulaire en fonction du type d'objet créé
 
 $nom = '';
 $type = '';
@@ -14,6 +14,7 @@ $degat = '';
 $armure = '';
 $froid = '';
 $chaleur = '';
+$durabilite = '';
 $prix1 = '';
 $prix2 = '';
 $description = '';
@@ -28,20 +29,23 @@ $poids = '';
 $attaque = '';
 $vitesse = '';
 
-
 // Si le formulaire a été soumis 
 if(isset($_POST['creer'])){
 
     if(isset($_GET['action']) && isset($_POST['nom'])
                             && isset($_POST['description'])
+                            && isset($_POST['monnaie'])
                             && isset($_POST['prix1'])){
         
         $nom = trim($_POST['nom']);
         $description = trim($_POST['description']);
-        $prix1 = trim($_POST['prix1']);
+        $monnaie = trim($_POST['monnaie']);
+
+        $id_serveur = $_SESSION['utilisateur']['id_serveur'];
+        $id_utilisateur = $_SESSION['utilisateur']['id_utilisateur'];
 
 
-        
+        // Ajout créature
         if($_GET['action'] == 'creature' && isset($_POST['vie'])
                                         && isset($_POST['energie'])
                                         && isset($_POST['oxygene'])
@@ -52,6 +56,16 @@ if(isset($_POST['creer'])){
                                         && isset($_POST['niveau'])
                                         && isset($_POST['sexe'])){
 
+
+            // Si absence de prix définie par l'utilisateur ...
+            if(empty($_POST['prix1'])){
+                $prix1 = 'A négocier';
+                $monnaie = '';
+            }else
+                $prix1 = trim($_POST['prix1']);
+                                            
+
+            $categorie = rechercheCategorie($tab_creature, $nom);
             $vie = trim($_POST['vie']);
             $energie = trim($_POST['energie']);
             $oxygene = trim($_POST['oxygene']);
@@ -62,51 +76,187 @@ if(isset($_POST['creer'])){
             $niveau = trim($_POST['niveau']);
             $sexe = $_POST['sexe'];
 
+            // Préparation format pour stockage dans la BDD
+            $sexeBDD = '';
+            foreach($_POST['sexe'] AS $valeur){
+                $sexeBDD .= $valeur . ' ';
+            }
+            $sexeBDD = trim($sexeBDD);
+
+            /* 
+            CONTROLE DES VARIABLES D'ENTREES
+            ...
+            */
+
+            if(empty($msg)){
+
+                $creation = $pdo->prepare("INSERT INTO creature (id_dino, nom, categorie, sexe, niveau, vie, energie, oxygène, nourriture, poids, attaque, vitesse, prix, monnaie, description, date_creation, id_serveur, id_utilisateur)
+                                                        VALUES (NULL, :nom, :categorie, :sexe, :niveau, :vie, :energie, :oxygene, :nourriture, :poids, :attaque, :vitesse, :prix1, :monnaie, :description, CURDATE(), $id_serveur, $id_utilisateur)");
+
+                $creation->bindParam(':nom', $nom, PDO::PARAM_STR);
+                $creation->bindParam(':categorie', $categorie, PDO::PARAM_STR);
+                $creation->bindParam(':sexe', $sexeBDD, PDO::PARAM_STR);
+                $creation->bindParam(':niveau', $niveau, PDO::PARAM_STR);
+                $creation->bindParam(':vie', $vie, PDO::PARAM_STR);
+                $creation->bindParam(':energie', $energie, PDO::PARAM_STR);
+                $creation->bindParam(':oxygene', $oxygene, PDO::PARAM_STR);
+                $creation->bindParam(':nourriture', $nourriture, PDO::PARAM_STR);
+                $creation->bindParam(':poids', $poids, PDO::PARAM_STR);
+                $creation->bindParam(':attaque', $attaque, PDO::PARAM_STR);
+                $creation->bindParam(':vitesse', $vitesse, PDO::PARAM_STR);
+                $creation->bindParam(':prix1', $prix1, PDO::PARAM_STR);
+                $creation->bindParam(':monnaie', $monnaie, PDO::PARAM_STR);
+                $creation->bindParam(':description', $description, PDO::PARAM_STR);
+            }
 
 
-        }elseif($_GET['action'] == 'selle' && isset($_POST['type'])
-                                        && isset($_POST['qualité'])
-                                        && isset($_POST['armure'])
-                                        && isset($_POST['prix2'])){
+        }elseif(($_GET['action'] == 'selle' || $_GET['action'] == 'arme' 
+                                            || $_GET['action'] == 'armure') 
+                                            && isset($_POST['prix2'])
+                                            && isset($_POST['qualite'])
+                                            && isset($_POST['type'])){
 
-            $type = $_POST['type'];
-            $qualite = trim($_POST['qualité']);
-            $armure = trim($_POST['armure']);
-            $prix2 = trim($_POST['prix2']);
-
-
-
-        }elseif($_GET['action'] == 'arme' && isset($_POST['type'])
-                                         && isset($_POST['qualite'])
-                                         && isset($_POST['degat'])
-                                         && isset($_POST['prix2'])){
-
-            $type = $_POST['type'];
             $qualite = trim($_POST['qualite']);
-            $degat = trim($_POST['degat']);
-            $prix2 = trim($_POST['prix2']);
-
-
-
-
-        }elseif($_GET['action'] == 'armure' && isset($_POST['type'])
-                                         && isset($_POST['qualite'])
-                                         && isset($_POST['armure'])
-                                         && isset($_POST['froid'])
-                                         && isset($_POST['chaleur'])
-                                         && isset($_POST['prix2'])){
-
             $type = $_POST['type'];
-            $qualite = trim($_POST['qualite']);
-            $armure = trim($_POST['armure']);
-            $froid = trim($_POST['froid']);
-            $chaleur = trim($_POST['chaleur']);
-            $prix2 = trim($_POST['prix2']);
+
+            // Préparation format pour stockage dans la BDD
+            if(!empty($type[1]))
+                $typeBDD = 'deux';
+            else
+                $typeBDD = $type[0];
 
 
+            // Si absence de prix définie par l'utilisateur ...
+            if($typeBDD == 'deux'){ // 2 prix possible en cas de vente d'objet et du plan
+                if(empty($_POST['prix1']) && empty($_POST['prix2'])){
+                    $prix1 = 'A négocier';
+                    $prix2 = 'A négocier';
+                    $monnaie = '';
+                }elseif(empty($_POST['prix1'])){
+                    $prix1 = 'A négocier';
+                    $prix2 = trim($_POST['prix2']);
+                }elseif(empty($_POST['prix2'])){
+                    $prix2 = 'A négocier';
+                    $prix1 = trim($_POST['prix1']);
+                }else{
+                    $prix1 = trim($_POST['prix1']);
+                    $prix2 = trim($_POST['prix2']);
+                }
+            }elseif($typeBDD == 'objet'){
+                if(empty($_POST['prix1'])){
+                    $prix1 = 'A négocier';
+                    $monnaie = '';
+                }else
+                    $prix1 = trim($_POST['prix1']);
+            }elseif($typeBDD == 'plan'){
+                if(empty($_POST['prix2'])){
+                    $prix2 = 'A négocier';
+                    $monnaie = '';
+                }else
+                    $prix2 = trim($_POST['prix2']);
+            }
+
+
+            // Ajout selle
+            if($_GET['action'] == 'selle' && isset($_POST['armure'])){
+
+                $categorie = rechercheCategorie($tab_creature, $nom);
+                $armure = trim($_POST['armure']);
+
+                /* 
+                CONTROLE DES VARIABLES D'ENTREES
+                ...
+                */
+
+                if(empty($msg)){
+
+                    $creation = $pdo->prepare("INSERT INTO selle (id_selle, nom, type, categorie, qualité, armure, prix1, prix2 , monnaie, description, date_creation, id_serveur, id_utilisateur)
+                                                            VALUES (NULL, :nom, :type, :categorie, :qualite, :armure, :prix1, :prix2, :monnaie, :description, CURDATE(), $id_serveur, $id_utilisateur)");
+
+                    $creation->bindParam(':nom', $nom, PDO::PARAM_STR);
+                    $creation->bindParam(':type', $typeBDD, PDO::PARAM_STR);
+                    $creation->bindParam(':categorie', $categorie, PDO::PARAM_STR);
+                    $creation->bindParam(':qualite', $qualite, PDO::PARAM_STR);
+                    $creation->bindParam(':armure', $armure, PDO::PARAM_STR);
+                    $creation->bindParam(':prix1', $prix1, PDO::PARAM_STR);
+                    $creation->bindParam(':prix2', $prix2, PDO::PARAM_STR);
+                    $creation->bindParam(':monnaie', $monnaie, PDO::PARAM_STR);
+                    $creation->bindParam(':description', $description, PDO::PARAM_STR);
+                }
+
+
+            // Ajout arme
+            }elseif($_GET['action'] == 'arme' && isset($_POST['degat'])){
+
+                $categorie = rechercheCategorie($tab_arme, $nom);
+                $degat = trim($_POST['degat']);
+
+                /* 
+                CONTROLE DES VARIABLES D'ENTREES
+                ...
+                */
+
+                if(empty($msg)){
+
+                    $creation = $pdo->prepare("INSERT INTO arme (id_arme, nom, type, categorie, qualité, dégât, prix1, prix2 , monnaie, description, date_creation, id_serveur, id_utilisateur)
+                                                            VALUES (NULL, :nom, :type, :categorie, :qualite, :degat, :prix1, :prix2, :monnaie, :description, CURDATE(), $id_serveur, $id_utilisateur)");
+
+                    $creation->bindParam(':nom', $nom, PDO::PARAM_STR);
+                    $creation->bindParam(':type', $typeBDD, PDO::PARAM_STR);
+                    $creation->bindParam(':categorie', $categorie, PDO::PARAM_STR);
+                    $creation->bindParam(':qualite', $qualite, PDO::PARAM_STR);
+                    $creation->bindParam(':degat', $degat, PDO::PARAM_STR);
+                    $creation->bindParam(':prix1', $prix1, PDO::PARAM_STR);
+                    $creation->bindParam(':prix2', $prix2, PDO::PARAM_STR);
+                    $creation->bindParam(':monnaie', $monnaie, PDO::PARAM_STR);
+                    $creation->bindParam(':description', $description, PDO::PARAM_STR);
+                }
+
+
+            // Ajout armure
+            }elseif($_GET['action'] == 'armure' && isset($_POST['armure'])
+                                            && isset($_POST['froid'])
+                                            && isset($_POST['chaleur'])
+                                            && isset($_POST['durabilite'])){
+
+                $categorie = rechercheCategorie($tab_armure, $nom);
+                $armure = trim($_POST['armure']);
+                $froid = trim($_POST['froid']);
+                $chaleur = trim($_POST['chaleur']);
+                $durabilite = trim($_POST['durabilite']);
+
+                /* 
+                CONTROLE DES VARIABLES D'ENTREES
+                ...
+                */
+
+                if(empty($msg)){
+
+                    $creation = $pdo->prepare("INSERT INTO armure (id_armure, nom, type, categorie, qualité, armure, froid, chaleur, durabilité, prix1, prix2 , monnaie, description, date_creation, id_serveur, id_utilisateur)
+                                                            VALUES (NULL, :nom, :type, :categorie, :qualite, :armure, :froid, :chaleur, :durabilite, :prix1, :prix2, :monnaie, :description, CURDATE(), $id_serveur, $id_utilisateur)");
+
+                    $creation->bindParam(':nom', $nom, PDO::PARAM_STR);
+                    $creation->bindParam(':type', $typeBDD, PDO::PARAM_STR);
+                    $creation->bindParam(':categorie', $categorie, PDO::PARAM_STR);
+                    $creation->bindParam(':qualite', $qualite, PDO::PARAM_STR);
+                    $creation->bindParam(':armure', $armure, PDO::PARAM_STR);
+                    $creation->bindParam(':froid', $froid, PDO::PARAM_STR);
+                    $creation->bindParam(':chaleur', $chaleur, PDO::PARAM_STR);
+                    $creation->bindParam(':durabilite', $durabilite, PDO::PARAM_STR);
+                    $creation->bindParam(':prix1', $prix1, PDO::PARAM_STR);
+                    $creation->bindParam(':prix2', $prix2, PDO::PARAM_STR);
+                    $creation->bindParam(':monnaie', $monnaie, PDO::PARAM_STR);
+                    $creation->bindParam(':description', $description, PDO::PARAM_STR);
+                }
+
+
+            }
 
 
         }
+ 
+        $creation->execute();
+
     }
 }
 
@@ -226,7 +376,7 @@ include '../inc/nav.inc.php';
 
                     <div class="qualite">
                         <label for="qualite">Qualité :</label>
-                        <select name="qualité" id="qualite">
+                        <select name="qualite" id="qualite">
                             <option value="Commun" <?= ($qualite == 'commun')?"checked":'' ?>>Commun</option>
                             <option value="Inhabituel" <?= ($qualite == 'Inhabituel')?"checked":'' ?>>Inhabituel</option>
                             <option value="Rare" <?= ($qualite == 'Rare')?"checked":'' ?>>Rare</option>
@@ -243,7 +393,7 @@ include '../inc/nav.inc.php';
                             <input type="text" id="armure" name="armure" placeholder="Armure" value="<?= $armure ?>">
                         </div>
 
-<?php // Bloc résistance chaleur et froid pour les armures
+<?php // Bloc résistance chaleur, froid et durabilité pour les armures
                         if($type_produit == 'armure'){
 ?>
                             <div class="block-res">
@@ -255,6 +405,10 @@ include '../inc/nav.inc.php';
                                     <label for="chaleur">Résistance à la chaleur :</label>
                                     <input type="text" id="chaleur" name="chaleur" placeholder="Résistance à la chaleur" value="<?= $chaleur ?>">
                                 </div>
+                                <div class="durabilite">
+                                    <label for="durabilite">Durabilité :</label>
+                                    <input type="text" id="durabilite" name="durabilite" placeholder="Durabilite" value="<?= $durabilite ?>">
+                                </div>
                             </div>
 <?php
                         }
@@ -265,7 +419,7 @@ include '../inc/nav.inc.php';
 ?>
                     <div class="degat">
                         <label for="degat">Dégâts :</label>
-                        <input type="text" id="degat" name="dégât" placeholder="Dégâts" value="<?= $degat ?>">
+                        <input type="text" id="degat" name="degat" placeholder="Dégâts" value="<?= $degat ?>">
                     </div>
 <?php
                     }
@@ -305,18 +459,23 @@ include '../inc/nav.inc.php';
             <div class="block-prix">
                 <div class="prix1">
                     <label for="prix1">Prix de <?= ($type_produit == 'creature')?'la créature':'l\'objet' ?></label>
-                    <input type="text" id="prix1" name="prix1" value="<?= $prix1 ?>">
+                    <input type="text" id="prix1" name="prix1" value="<?= (is_numeric($prix1))?$prix1:'' ?>"> <!-- Pour éviter l'affichage de "A négocier" -->
                 </div>
 <?php
                 if($type_produit != 'creature'){
 ?>
                     <div class="prix2" style="<?= (empty($_POST['prix2']))?'display: none':''?>;">
                         <label for="prix2">Prix du plan</label>
-                        <input type="text" id="prix2" name="prix2" value="<?= $prix2 ?>">
+                        <input type="text" id="prix2" name="prix2" value="<?= (is_numeric($prix2))?$prix2:'' ?>">
                     </div>
 <?php
                 }
 ?>
+                <div class="monnaie">
+                    <label for="monnaie">Monnaie</label>
+                    <input type="text" id="monnaie" name="monnaie" value="<?= (empty($_SESSION['serveur']['monnaie'])?"":$_SESSION['serveur']['monnaie']); ?>">
+                </div>
+
             </div>
 
             <div class="creer">

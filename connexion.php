@@ -23,7 +23,7 @@ if(isset($_GET['action'])){
     // Déconnexion et renvoie sur la page principale
     if($_GET['action'] == 'deconnexion'){
         session_destroy();
-        /*setcookie('PHPSESSID','',time()); // Suppression du cookie lié à la session */
+/*         setcookie('PHPSESSID'); // Suppression du cookie lié à la session ATTENTION pour le moment création à chaque script*/
 	    header('location:index.php');
 
     // Inscription dans la BDD
@@ -99,6 +99,7 @@ if(isset($_GET['action'])){
                 foreach($infos AS $indice => $valeur) {
                     if($indice != 'mdp') {
                         $_SESSION['utilisateur'][$indice] = $valeur;
+                        $_SESSION['serveur']['monnaie'] = "po"; // En attendant l'enregistrement de la monnaie dans la page du compte utilisateur
                     }				
                 }
                 header('location:index.php');
