@@ -45,6 +45,7 @@ if(isset($_POST['creer'])){
         $id_utilisateur = $_SESSION['utilisateur']['id_utilisateur'];
 
 
+
         // Ajout créature
         if($_GET['action'] == 'creature' && isset($_POST['vie'])
                                         && isset($_POST['energie'])
