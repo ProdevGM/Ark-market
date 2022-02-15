@@ -54,7 +54,10 @@ include '../inc/nav.inc.php';
                                 <p class="initpad col-4 col-md-2"><?= $total_creature['date_creation'] ?></p>
                                 <div class="initpad action col-2 col-md-1 row justify-content-end">
                                     <a href="<?= URL ?>gestion/ajout.php?action=modification&type=creature&id=<?= $total_creature['id_creature'] ?>" class="col-2"><img src="<?= URL ?>/image/site/crayon_vert.png" alt=""></a>
-                                    <a href="<?= URL ?>gestion/ajout.php?action=supprimer&type=creature&id=<?= $total_creature['id_creature'] ?>" class="col-2"><img src="<?= URL ?>/image/site/croix_rouge.png" alt=""></a>
+                                    <a hraf="gestion/ajout.php?action=suppimer&type=creature&id=<?= $total_creature['id_creature'] ?>" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#staticBackdrop">
+                                        <img src="<?= URL ?>/image/site/croix_rouge.png" alt="">
+                                    </a>
+                                    
                                 </div>
 
                         </button>
@@ -170,6 +173,27 @@ include '../inc/nav.inc.php';
         </div>
 
 
+    </div>
+
+
+
+    <!-- Modal d'avertissement et de confirmation de suppression de produit (BOOTSTRAP)-->
+    <div class="modal fade" id="staticBackdrop" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="staticBackdropLabel">Suppresion de produit</h5>
+                </div>
+                <div class="modal-body">
+                    <p>Toutes suppression est définitive</p>
+                    <p>Êtes-vous certain de vouloir supprimer ce produit ?</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Non</button>
+                    <button type="button" class="btn btn-primary" id="suparticle">Supprimer</button>
+                </div>
+            </div>
+        </div>
     </div>
 
 <?php

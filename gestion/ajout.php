@@ -34,6 +34,37 @@ $vitesse = '';
 
 
 
+/* ********************* */
+/* ********************* */
+// SUPPRESSION D'UN PRODUIT
+/* ********************* */
+/* ********************* */
+
+if(isset($_GET['action']) && $_GET['action'] == 'supprimer'
+                          && isset($_GET['type'])
+                          && isset($_GET['id'])){
+
+    // Contrôle sur le propriétaire de ce produit
+    $PDO_info = $pdo->query("SELECT id_utilisateur FROM ".$_GET['type']." WHERE id_".$_GET['type']." = ".$_GET['id']."");
+
+    if($PDO_info->rowcount() == 1){ // Contrôle si le produit existe bien
+
+        $info = $PDO_info->fetch(PDO::FETCH_ASSOC);
+
+        if($info['id_utilisateur'] == $_SESSION['utilisateur']['id_utilisateur']){ // Contrôle si le produit appartient bien
+
+            $delete = $pdo->query("DELETE FROM ".$_GET['type']." WHERE id_".$_GET['type']." = ".$_GET['id']."");
+
+        }else
+            header('location:http://ark-market/index.php');
+    }else
+        header('location:http://ark-market/index.php');
+}
+
+
+
+
+
 /* ************************************************* */
 /* ************************************************* */
 // RECUPERATION DES DONNÉES DE LA BDD POUR MODIFICATION
@@ -388,7 +419,7 @@ include '../inc/nav.inc.php';
 
         <p class="gtitre text-center"><?= (isset($_GET['action']) && $_GET['action'] == 'creer')?'Nouveau produit':'Modification de produit' ?></p>
 <?php
-        if(isset($_GET['action']) && $_GET['action'] == 'creer'){ // Affichage uniquement en cas de création de produit. Pas nécessaire dans le cas d'une modification
+        if(isset($_GET['action']) && $_GET['action'] == 'creation'){ // Affichage uniquement en cas de création de produit. Pas nécessaire dans le cas d'une modification
 ?>
             <div class="block-type">
                 <a href="<?= URL ?>gestion/ajout.php?action=creation&type=creature">Créature</a>
@@ -577,7 +608,7 @@ include '../inc/nav.inc.php';
 
             <div class="validation">
 <?php
-                if($_GET['action'] == 'creer'){
+                if($_GET['action'] == 'creation'){
 ?>
                     <input type="submit" name="creer" value="Créer mon produit">
 <?php

@@ -30,7 +30,7 @@ define('SITE_ROOT', '/ark-market/');
 
 
 // Tableau recenssant toutes les créatures, selles, armes, armures et catégorie
-$tab_categorie_creature_selle = ['terrestre', 'volant', 'aquatique', 'amphibie'];
+$tab_categorie_creature_selle = ['terrestre', 'volant', 'aquatique'];
 $tab_categorie_arme = ['outil', 'mélé', 'bouclier', 'jet', 'feu', 'accessoire', 'explosif', 'piège', 'tourelle', 'tek'];
 $tab_categorie_armure = ['tissu', 'cuir', 'fourrure', 'desert', 'camouflage', 'chitine', 'métal', 'radiation', 'plongé', 'emeute', 'tek'];
 
