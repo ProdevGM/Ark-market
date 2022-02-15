@@ -29,7 +29,7 @@ include '../inc/nav.inc.php';
 
             <div class="onglet row align-items-center">
                 <button class="col-10 text-end" type="button" data-bs-toggle="collapse" data-bs-target="#total-creature" aria-expanded="false" aria-controls="total-creature">MES CREATURES</button>
-                <a class="col-2 text-center" href="<?= URL ?>gestion/ajout.php?action=creature">Ajouter un produit</a>
+                <a class="col-2 text-center" href="<?= URL ?>gestion/ajout.php?action=creation&type=creature">Ajouter un produit</a>
             </div>
 
             <div class="collapse block-produit" id="total-creature">
@@ -53,8 +53,8 @@ include '../inc/nav.inc.php';
                                 </div>
                                 <p class="initpad col-4 col-md-2"><?= $total_creature['date_creation'] ?></p>
                                 <div class="initpad action col-2 col-md-1 row justify-content-end">
-                                    <a href="#" class="col-2"><img src="<?= URL ?>/image/site/crayon_vert.png" alt=""></a>
-                                    <a href="#" class="col-2"><img src="<?= URL ?>/image/site/croix_rouge.png" alt=""></a>
+                                    <a href="<?= URL ?>gestion/ajout.php?action=modification&type=creature&id=<?= $total_creature['id_creature'] ?>" class="col-2"><img src="<?= URL ?>/image/site/crayon_vert.png" alt=""></a>
+                                    <a href="<?= URL ?>gestion/ajout.php?action=supprimer&type=creature&id=<?= $total_creature['id_creature'] ?>" class="col-2"><img src="<?= URL ?>/image/site/croix_rouge.png" alt=""></a>
                                 </div>
 
                         </button>
@@ -71,7 +71,7 @@ include '../inc/nav.inc.php';
 
             <div class="onglet row align-items-center">
                 <button class="col-10 text-end" type="button" data-bs-toggle="collapse" data-bs-target="#total-selle" aria-expanded="false" aria-controls="total-selle">MES SELLES</button>
-                <a class="col-2 text-center" href="<?= URL ?>gestion/ajout.php?action=selle">Ajouter un produit</a>
+                <a class="col-2 text-center" href="<?= URL ?>gestion/ajout.php?action=creation&type=selle">Ajouter un produit</a>
             </div>
 
             <div class="collapse block-produit" id="total-selle">
@@ -79,18 +79,18 @@ include '../inc/nav.inc.php';
 <?php
                     while($total_selle = $pdo_total_selle->fetch(PDO::FETCH_ASSOC)){
 ?>
-                        <button type="button" class="initmarg produit row">
+                        <div class="initmarg produit row">
 
                                 <p class="initpad col-4 col-md-2"><?= ucfirst($total_selle['nom']) ?></p>
                                 <p class="initpad col-2 col-lg-1"><?= $total_selle['armure'] ?></p>
                                 <p class="initpad d-none d-md-block col-md-5 col-lg-6"><?= ucfirst($total_selle['qualité']) ?></p>
                                 <p class="initpad col-4 col-md-2"><?= $total_selle['date_creation'] ?></p>
                                 <div class="initpad action col-2 col-md-1 row justify-content-end">
-                                    <a href="#" class="col-2"><img src="<?= URL ?>/image/site/crayon_vert.png" alt=""></a>
-                                    <a href="#" class="col-2"><img src="<?= URL ?>/image/site/croix_rouge.png" alt=""></a>
+                                    <a href="<?= URL ?>gestion/ajout.php?action=modification&type=selle&id=<?= $total_selle['id_selle'] ?>" class="col-2"><img src="<?= URL ?>/image/site/crayon_vert.png" alt=""></a>
+                                    <a href="<?= URL ?>gestion/ajout.php?action=supprimer&type=selle&id=<?= $total_selle['id_selle'] ?>" class="col-2"><img src="<?= URL ?>/image/site/croix_rouge.png" alt=""></a>
                                 </div>
 
-                        </button>
+                        </div>
 <?php
                     }
 ?>
@@ -104,7 +104,7 @@ include '../inc/nav.inc.php';
 
             <div class="onglet row align-items-center">
                 <button class="col-10 text-end" type="button" data-bs-toggle="collapse" data-bs-target="#total-arme" aria-expanded="false" aria-controls="total-arme">MES ARMES</button>
-                <a class="col-2 text-center" href="<?= URL ?>gestion/ajout.php?action=arme">Ajouter un produit</a>
+                <a class="col-2 text-center" href="<?= URL ?>gestion/ajout.php?action=creation&type=arme">Ajouter un produit</a>
             </div>
 
             <div class="collapse block-produit" id="total-arme">
@@ -112,18 +112,18 @@ include '../inc/nav.inc.php';
 <?php
                     while($total_arme = $pdo_total_arme->fetch(PDO::FETCH_ASSOC)){
 ?>
-                        <button type="button" class="initmarg produit row">
+                        <div class="initmarg produit row">
 
                                 <p class="initpad col-4 col-md-2"><?= ucfirst($total_arme['nom']) ?></p>
                                 <p class="initpad col-2 col-lg-1"><?= $total_arme['dégât'] ?></p>
                                 <p class="initpad d-none d-md-block col-md-5 col-lg-6"><?= ucfirst($total_arme['qualité']) ?></p>
                                 <p class="initpad col-4 col-md-2"><?= $total_arme['date_creation'] ?></p>
                                 <div class="initpad action col-2 col-md-1 row justify-content-end">
-                                    <a href="#" class="col-2"><img src="<?= URL ?>/image/site/crayon_vert.png" alt=""></a>
-                                    <a href="#" class="col-2"><img src="<?= URL ?>/image/site/croix_rouge.png" alt=""></a>
+                                    <a href="<?= URL ?>gestion/ajout.php?action=modification&type=arme&id=<?= $total_arme['id_arme'] ?>" class="col-2"><img src="<?= URL ?>/image/site/crayon_vert.png" alt=""></a>
+                                    <a href="<?= URL ?>gestion/ajout.php?action=supprimer&type=arme&id=<?= $total_arme['id_arme'] ?>" class="col-2"><img src="<?= URL ?>/image/site/croix_rouge.png" alt=""></a>
                                 </div>
 
-                        </button>
+                    </div>
 <?php
                     }
 ?>
@@ -137,8 +137,7 @@ include '../inc/nav.inc.php';
 
             <div class="onglet row align-items-center">
                 <button class="col-10 text-end" type="button" data-bs-toggle="collapse" data-bs-target="#total-armure" aria-expanded="false" aria-controls="total-armure">MES ARMURES</button>
-                <a class="col-2 text-center" href="<?= URL ?>
-                ">Ajouter un produit</a>
+                <a class="col-2 text-center" href="<?= URL ?>gestion/ajout.php?action=creation&type=armure">Ajouter un produit</a>
             </div>
 
             <div class="collapse block-produit" id="total-armure">
@@ -146,7 +145,7 @@ include '../inc/nav.inc.php';
 <?php
                     while($total_armure = $pdo_total_armure->fetch(PDO::FETCH_ASSOC)){
 ?>
-                        <button type="button" class="initmarg produit row">
+                        <div class="initmarg produit row">
 
                                 <p class="initpad col-4 col-md-2"><?= ucfirst($total_armure['nom']) ?></p>
                                 <p class="initpad col-2 col-lg-1"><?= $total_armure['armure'] ?></p>
@@ -157,11 +156,11 @@ include '../inc/nav.inc.php';
                                 </div>
                                 <p class="initpad col-4 col-md-2"><?= $total_armure['date_creation'] ?></p>
                                 <div class="initpad action col-2 col-md-1 row justify-content-end">
-                                    <a href="#" class="col-2"><img src="<?= URL ?>/image/site/crayon_vert.png" alt=""></a>
-                                    <a href="#" class="col-2"><img src="<?= URL ?>/image/site/croix_rouge.png" alt=""></a>
+                                    <a href="<?= URL ?>gestion/ajout.php?action=modification&type=armure&id=<?= $total_armure['id_armure'] ?>" class="col-2"><img src="<?= URL ?>/image/site/crayon_vert.png" alt=""></a>
+                                    <a href="<?= URL ?>gestion/ajout.php?action=supprimer&type=armure&id=<?= $total_armure['id_armure'] ?>" class="col-2"><img src="<?= URL ?>/image/site/croix_rouge.png" alt=""></a>
                                 </div>
 
-                        </button>
+                    </div>
 <?php
                     }
 ?>

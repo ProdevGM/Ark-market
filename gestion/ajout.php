@@ -8,7 +8,7 @@ $tab_datalist = '';
 $type_produit = ''; // Permettra d'afficher les différents champs du formulaire en fonction du type d'objet créé
 
 $nom = '';
-$type = '';
+/* $type = ''; */
 $qualite = '';
 $degat = '';
 $armure = '';
@@ -29,10 +29,65 @@ $poids = '';
 $attaque = '';
 $vitesse = '';
 
-// Si le formulaire a été soumis 
-if(isset($_POST['creer'])){
 
-    if(isset($_GET['action']) && isset($_POST['nom'])
+// Récupération des données pour modification
+if(isset($_GET['action']) && $_GET['action'] == 'modification'
+                            && isset($_GET['type'])
+                            && isset($_GET['id'])){
+
+    $PDO_recuperation = $pdo->query("SELECT * FROM ".$_GET['type']." WHERE id_".$_GET['type']." = ".$_GET['id']."");
+    $recuperation = $PDO_recuperation->fetch(PDO::FETCH_ASSOC);
+
+
+    if($PDO_recuperation->rowcount() == 1 && $recuperation['id_utilisateur'] == $_SESSION['utilisateur']['id_utilisateur']){
+
+        $nom = $recuperation['nom'];
+        $description = $recuperation['description'];
+        $monnaie = $recuperation['monnaie'];
+        $prix1 = $recuperation['prix1'];
+
+        if($_GET['type'] == 'creature'){
+
+            $sexe = $recuperation['sexe'];
+            $niveau = $recuperation['niveau'];
+            $vie = $recuperation['vie'];
+            $energie = $recuperation['energie'];
+            $oxygene = $recuperation['oxygene'];
+            $nourriture = $recuperation['nourriture'];
+            $poids = $recuperation['poids'];
+            $attaque = $recuperation['attaque'];
+            $vitesse = $recuperation['vitesse'];
+
+        }elseif($_GET['type'] == 'selle' || $_GET['type'] == 'arme' || $_GET['type'] == 'armure'){
+
+            $qualite = $recuperation['qualité'];
+            $prix2 = $recuperation['prix2'];
+            $typeBDD = $recuperation['type'];
+
+            if( $_GET['type'] == 'selle')
+                $armure = $recuperation['armure'];
+            elseif($_GET['type'] == 'arme')
+                $degat = $recuperation['dégât'];
+            elseif($_GET['type'] == 'armure'){
+                $armure = $recuperation['armure'];
+                $froid = $recuperation['froid'];
+                $chaleur = $recuperation['chaleur'];
+                $durabilite = $recuperation['durabilité'];                
+            }
+        }
+
+    }else
+        header('location:http://ark-market/index.php');
+
+}
+
+
+
+// Partie création de produit
+if(isset($_GET['action']) && $_GET['action'] == 'creation' && isset($_POST['creer'])){
+
+    // 
+    if(isset($_GET['type']) && isset($_POST['nom'])
                             && isset($_POST['description'])
                             && isset($_POST['monnaie'])
                             && isset($_POST['prix1'])){
@@ -47,7 +102,7 @@ if(isset($_POST['creer'])){
 
 
         // Ajout créature
-        if($_GET['action'] == 'creature' && isset($_POST['vie'])
+        if($_GET['type'] == 'creature' && isset($_POST['vie'])
                                         && isset($_POST['energie'])
                                         && isset($_POST['oxygene'])
                                         && isset($_POST['nourriture'])
@@ -111,8 +166,8 @@ if(isset($_POST['creer'])){
             }
 
 
-        }elseif(($_GET['action'] == 'selle' || $_GET['action'] == 'arme' 
-                                            || $_GET['action'] == 'armure') 
+        }elseif(($_GET['type'] == 'selle' || $_GET['type'] == 'arme' 
+                                            || $_GET['type'] == 'armure') 
                                             && isset($_POST['prix2'])
                                             && isset($_POST['qualite'])
                                             && isset($_POST['type'])){
@@ -159,7 +214,7 @@ if(isset($_POST['creer'])){
 
 
             // Ajout selle
-            if($_GET['action'] == 'selle' && isset($_POST['armure'])){
+            if($_GET['type'] == 'selle' && isset($_POST['armure'])){
 
                 $categorie = rechercheCategorie($tab_creature, $nom);
                 $armure = trim($_POST['armure']);
@@ -187,7 +242,7 @@ if(isset($_POST['creer'])){
 
 
             // Ajout arme
-            }elseif($_GET['action'] == 'arme' && isset($_POST['degat'])){
+            }elseif($_GET['type'] == 'arme' && isset($_POST['degat'])){
 
                 $categorie = rechercheCategorie($tab_arme, $nom);
                 $degat = trim($_POST['degat']);
@@ -215,7 +270,7 @@ if(isset($_POST['creer'])){
 
 
             // Ajout armure
-            }elseif($_GET['action'] == 'armure' && isset($_POST['armure'])
+            }elseif($_GET['type'] == 'armure' && isset($_POST['armure'])
                                             && isset($_POST['froid'])
                                             && isset($_POST['chaleur'])
                                             && isset($_POST['durabilite'])){
@@ -265,8 +320,8 @@ if(isset($_POST['creer'])){
 
 
 // Préparation de la datalist en fonction du type de produit créé
-if(!empty($_GET['action'])){
-    switch($_GET['action']){
+if(!empty($_GET['type'])){
+    switch($_GET['type']){
         case 'creature' :
             $tab_datalist = array_merge($tab_creature['terrestre'], $tab_creature['volant'], $tab_creature['aquatique']);
             $type_produit = 'creature';
@@ -294,16 +349,20 @@ include '../inc/nav.inc.php';
 <main class="ajout">
     <div class="container">
 
-        <p class="gtitre text-center"> Nouveau produit</p>
-
-        <div class="block-type">
-            <a href="<?= URL ?>gestion/ajout.php?action=creature">Créature</a>
-            <a href="<?= URL ?>gestion/ajout.php?action=selle">Selle</a>
-            <a href="<?= URL ?>gestion/ajout.php?action=arme">Arme</a>
-            <a href="<?= URL ?>gestion/ajout.php?action=armure">Armure</a
-            >
-        </div>
-
+        <p class="gtitre text-center"><?= (isset($_GET['action']) && $_GET['action'] == 'creer')?'Nouveau produit':'Modification de produit' ?></p>
+<?php
+        if(isset($_GET['action']) && $_GET['action'] == 'creer'){ // Affichage uniquement en cas de création de produit. Pas nécessaire dans le cas d'une modification
+?>
+            <div class="block-type">
+                <a href="<?= URL ?>gestion/ajout.php?action=creation&type=creature">Créature</a>
+                <a href="<?= URL ?>gestion/ajout.php?action=creation&type=selle">Selle</a>
+                <a href="<?= URL ?>gestion/ajout.php?action=creation&type=arme">Arme</a>
+                <a href="<?= URL ?>gestion/ajout.php?action=creation&type=armure">Armure</a
+                >
+            </div>
+<?php
+        }
+?>
         <form method="post" action="">
 
             <div class="block-nom">
@@ -324,8 +383,8 @@ include '../inc/nav.inc.php';
             if($type_produit != 'creature'){
 ?>
             <div class="block-type-vente">
-                <input type="checkbox" name="type[]" id="objet" <?= (!isset($_POST['creer'])?'checked':'')?> <?= (isset($type[0]) && array_search('objet', $type) !== false)?'checked':'' ?> value="objet"> Objet
-                <input type="checkbox" name="type[]" id="plan" <?= (isset($type[0]) && array_search('plan', $type) !== false)?'checked':'' ?> value="plan"> Plan
+                <input type="checkbox" name="type[]" id="objet" <?= (isset($_POST['action']) && $_POST['action'] == 'creation')?'checked':'' ?> <?= (isset($typeBDD) && $typeBDD == 'objet' || $typeBDD == 'deux')?'checked':'' ?> value="objet"> Objet
+                <input type="checkbox" name="type[]" id="plan" <?= (isset($typeBDD) && $typeBDD == 'plan' || $typeBDD == 'deux')?'checked':'' ?> value="plan"> Plan
             </div>
 <?php
             }
@@ -459,13 +518,13 @@ include '../inc/nav.inc.php';
 
             <div class="block-prix">
                 <div class="prix1">
-                    <label for="prix1">Prix de <?= ($type_produit == 'creature')?'la créature':'l\'objet' ?></label>
-                    <input type="text" id="prix1" name="prix1" value="<?= (is_numeric($prix1))?$prix1:'' ?>"> <!-- Pour éviter l'affichage de "A négocier" -->
+                    <label for="prix1" style="<?= (empty($_POST['prix1']) && empty($prix1))?'display: none':'' ?>">Prix de <?= ($type_produit == 'creature')?'la créature':'l\'objet' ?></label>
+                    <input type="text" id="prix1" name="prix1" value="<?= (is_numeric($prix1))?$prix1:'' ?>">
                 </div>
 <?php
                 if($type_produit != 'creature'){
 ?>
-                    <div class="prix2" style="<?= (empty($_POST['prix2']))?'display: none':''?>;">
+                    <div class="prix2" style="<?= (empty($_POST['prix2']) && empty($prix2))?'display: none':'' ?>;">
                         <label for="prix2">Prix du plan</label>
                         <input type="text" id="prix2" name="prix2" value="<?= (is_numeric($prix2))?$prix2:'' ?>">
                     </div>
@@ -479,8 +538,18 @@ include '../inc/nav.inc.php';
 
             </div>
 
-            <div class="creer">
-                <input type="submit" name="creer" value="Créer mon produit">
+            <div class="validation">
+<?php
+                if($_GET['action'] == 'creer'){
+?>
+                    <input type="submit" name="creer" value="Créer mon produit">
+<?php
+                }else{
+?>
+                    <input type="submit" name="modifier" value="Modifier mon produit">
+<?php
+                }
+?>
             </div>
         </form>
 
