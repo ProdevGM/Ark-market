@@ -23,7 +23,7 @@ function user_is_connect() {
 function rechercheCategorie($tabSelect, $nomSelect){
 
 		foreach($tabSelect AS $indice => $valeur){
-			if(array_search($nomSelect, $tabSelect[$indice])){
+			if(array_search($nomSelect, $tabSelect[$indice]) !== false){
 				return $indice;
 			}
 		}

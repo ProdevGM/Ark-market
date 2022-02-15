@@ -8,7 +8,8 @@ $tab_datalist = '';
 $type_produit = ''; // Permettra d'afficher les différents champs du formulaire en fonction du type d'objet créé
 
 $nom = '';
-/* $type = ''; */
+/* $type = ''; */ // Array
+$typeBDD = ''; // Format stockable dans la BDD
 $qualite = '';
 $degat = '';
 $armure = '';
@@ -19,7 +20,8 @@ $prix1 = '';
 $prix2 = '';
 $description = '';
 
-$sexe = '';
+$sexe = ''; // Array
+$sexeBDD = ''; // Format stockable dans la BDD
 $niveau = '';
 $vie = '';
 $energie = '';
@@ -30,7 +32,14 @@ $attaque = '';
 $vitesse = '';
 
 
-// Récupération des données pour modification
+
+
+/* ************************************************* */
+/* ************************************************* */
+// RECUPERATION DES DONNÉES DE LA BDD POUR MODIFICATION
+/* ************************************************* */
+/* ************************************************* */
+
 if(isset($_GET['action']) && $_GET['action'] == 'modification'
                             && isset($_GET['type'])
                             && isset($_GET['id'])){
@@ -41,18 +50,19 @@ if(isset($_GET['action']) && $_GET['action'] == 'modification'
 
     if($PDO_recuperation->rowcount() == 1 && $recuperation['id_utilisateur'] == $_SESSION['utilisateur']['id_utilisateur']){
 
-        $nom = $recuperation['nom'];
+        $nom = ucfirst($recuperation['nom']);
         $description = $recuperation['description'];
         $monnaie = $recuperation['monnaie'];
         $prix1 = $recuperation['prix1'];
 
         if($_GET['type'] == 'creature'){
 
-            $sexe = $recuperation['sexe'];
+
+            $sexe = preg_split('/ /', $recuperation['sexe']); // Stockage des données sous forme de tabeau
             $niveau = $recuperation['niveau'];
             $vie = $recuperation['vie'];
             $energie = $recuperation['energie'];
-            $oxygene = $recuperation['oxygene'];
+            $oxygene = $recuperation['oxygène'];
             $nourriture = $recuperation['nourriture'];
             $poids = $recuperation['poids'];
             $attaque = $recuperation['attaque'];
@@ -83,8 +93,15 @@ if(isset($_GET['action']) && $_GET['action'] == 'modification'
 
 
 
-// Partie création de produit
-if(isset($_GET['action']) && $_GET['action'] == 'creation' && isset($_POST['creer'])){
+
+/* ************************************************************************ */
+/* ************************************************************************ */
+// RECUPERATION ET CONTRÔLE DES DONNÉES PUIS CREATION / MODIFICATION DE LA BDD
+/* ************************************************************************ */
+/* ************************************************************************ */
+
+if(isset($_GET['action']) && ($_GET['action'] == 'creation' || $_GET['action'] == 'modification')
+                          && (isset($_POST['creer']) || isset($_POST['modifier']))){
 
     // 
     if(isset($_GET['type']) && isset($_POST['nom'])
@@ -92,7 +109,7 @@ if(isset($_GET['action']) && $_GET['action'] == 'creation' && isset($_POST['cree
                             && isset($_POST['monnaie'])
                             && isset($_POST['prix1'])){
         
-        $nom = trim($_POST['nom']);
+        $nom = ucfirst(trim($_POST['nom']));
         $description = trim($_POST['description']);
         $monnaie = trim($_POST['monnaie']);
 
@@ -101,7 +118,7 @@ if(isset($_GET['action']) && $_GET['action'] == 'creation' && isset($_POST['cree
 
 
 
-        // Ajout créature
+        // Traitement des données propre aux créatures
         if($_GET['type'] == 'creature' && isset($_POST['vie'])
                                         && isset($_POST['energie'])
                                         && isset($_POST['oxygene'])
@@ -113,7 +130,7 @@ if(isset($_GET['action']) && $_GET['action'] == 'creation' && isset($_POST['cree
                                         && isset($_POST['sexe'])){
 
 
-            // Si absence de prix définie par l'utilisateur ...
+            // Si absence de prix définie par l'utilisateur
             if(empty($_POST['prix1'])){
                 $prix1 = 'A négocier';
                 $monnaie = '';
@@ -133,7 +150,6 @@ if(isset($_GET['action']) && $_GET['action'] == 'creation' && isset($_POST['cree
             $sexe = $_POST['sexe'];
 
             // Préparation format pour stockage dans la BDD
-            $sexeBDD = '';
             foreach($_POST['sexe'] AS $valeur){
                 $sexeBDD .= $valeur . ' ';
             }
@@ -146,8 +162,14 @@ if(isset($_GET['action']) && $_GET['action'] == 'creation' && isset($_POST['cree
 
             if(empty($msg)){
 
-                $creation = $pdo->prepare("INSERT INTO creature (id_dino, nom, categorie, sexe, niveau, vie, energie, oxygène, nourriture, poids, attaque, vitesse, prix, monnaie, description, date_creation, id_serveur, id_utilisateur)
+                if(isset($_POST['creer'])){
+                    $creation = $pdo->prepare("INSERT INTO creature (id_creature, nom, categorie, sexe, niveau, vie, energie, oxygène, nourriture, poids, attaque, vitesse, prix1, monnaie, description, date_creation, id_serveur, id_utilisateur)
                                                         VALUES (NULL, :nom, :categorie, :sexe, :niveau, :vie, :energie, :oxygene, :nourriture, :poids, :attaque, :vitesse, :prix1, :monnaie, :description, CURDATE(), $id_serveur, $id_utilisateur)");
+                }elseif(isset($_POST['modifier'])){
+                    $creation = $pdo->prepare("UPDATE creature SET nom = :nom, categorie = :categorie, sexe = :sexe, niveau = :niveau, vie = :vie, energie = :energie, oxygène = :oxygene, nourriture = :nourriture, 
+                                                                    poids = :poids, attaque = :attaque, vitesse = :vitesse, prix1 = :prix1, monnaie = :monnaie, description = :description
+                                                                    WHERE id_creature = ".$_GET['id']."");
+                }
 
                 $creation->bindParam(':nom', $nom, PDO::PARAM_STR);
                 $creation->bindParam(':categorie', $categorie, PDO::PARAM_STR);
@@ -166,6 +188,7 @@ if(isset($_GET['action']) && $_GET['action'] == 'creation' && isset($_POST['cree
             }
 
 
+        // Traitement des données des selles, armes et armures
         }elseif(($_GET['type'] == 'selle' || $_GET['type'] == 'arme' 
                                             || $_GET['type'] == 'armure') 
                                             && isset($_POST['prix2'])
@@ -182,8 +205,8 @@ if(isset($_GET['action']) && $_GET['action'] == 'creation' && isset($_POST['cree
                 $typeBDD = $type[0];
 
 
-            // Si absence de prix définie par l'utilisateur ...
-            if($typeBDD == 'deux'){ // 2 prix possible en cas de vente d'objet et du plan
+            // Prise en compte de tous les combinaisons concernant les 2 prix possible (objet et plan)
+            if($typeBDD == 'deux'){
                 if(empty($_POST['prix1']) && empty($_POST['prix2'])){
                     $prix1 = 'A négocier';
                     $prix2 = 'A négocier';
@@ -199,12 +222,14 @@ if(isset($_GET['action']) && $_GET['action'] == 'creation' && isset($_POST['cree
                     $prix2 = trim($_POST['prix2']);
                 }
             }elseif($typeBDD == 'objet'){
+                $prix2 = '';
                 if(empty($_POST['prix1'])){
                     $prix1 = 'A négocier';
                     $monnaie = '';
                 }else
                     $prix1 = trim($_POST['prix1']);
             }elseif($typeBDD == 'plan'){
+                $prix1 = '';
                 if(empty($_POST['prix2'])){
                     $prix2 = 'A négocier';
                     $monnaie = '';
@@ -213,7 +238,7 @@ if(isset($_GET['action']) && $_GET['action'] == 'creation' && isset($_POST['cree
             }
 
 
-            // Ajout selle
+            // Traitement des données propre aux selles
             if($_GET['type'] == 'selle' && isset($_POST['armure'])){
 
                 $categorie = rechercheCategorie($tab_creature, $nom);
@@ -226,9 +251,15 @@ if(isset($_GET['action']) && $_GET['action'] == 'creation' && isset($_POST['cree
 
                 if(empty($msg)){
 
-                    $creation = $pdo->prepare("INSERT INTO selle (id_selle, nom, type, categorie, qualité, armure, prix1, prix2 , monnaie, description, date_creation, id_serveur, id_utilisateur)
+                    if(isset($_POST['creer'])){
+                        $creation = $pdo->prepare("INSERT INTO selle (id_selle, nom, type, categorie, qualité, armure, prix1, prix2 , monnaie, description, date_creation, id_serveur, id_utilisateur)
                                                             VALUES (NULL, :nom, :type, :categorie, :qualite, :armure, :prix1, :prix2, :monnaie, :description, CURDATE(), $id_serveur, $id_utilisateur)");
-
+                    }elseif(isset($_POST['modifier'])){
+                        $creation = $pdo->prepare("UPDATE selle SET nom = :nom, type = :type, categorie = :categorie, qualité = :qualite, armure = :armure, 
+                                                                    prix1 = :prix1, prix2 = :prix2, monnaie = :monnaie, description = :description
+                                                                    WHERE id_selle = ".$_GET['id']."");
+                    }
+    
                     $creation->bindParam(':nom', $nom, PDO::PARAM_STR);
                     $creation->bindParam(':type', $typeBDD, PDO::PARAM_STR);
                     $creation->bindParam(':categorie', $categorie, PDO::PARAM_STR);
@@ -241,7 +272,7 @@ if(isset($_GET['action']) && $_GET['action'] == 'creation' && isset($_POST['cree
                 }
 
 
-            // Ajout arme
+            // Traitement des données propre aux armes
             }elseif($_GET['type'] == 'arme' && isset($_POST['degat'])){
 
                 $categorie = rechercheCategorie($tab_arme, $nom);
@@ -254,8 +285,14 @@ if(isset($_GET['action']) && $_GET['action'] == 'creation' && isset($_POST['cree
 
                 if(empty($msg)){
 
-                    $creation = $pdo->prepare("INSERT INTO arme (id_arme, nom, type, categorie, qualité, dégât, prix1, prix2 , monnaie, description, date_creation, id_serveur, id_utilisateur)
+                    if(isset($_POST['creer'])){
+                        $creation = $pdo->prepare("INSERT INTO arme (id_arme, nom, type, categorie, qualité, dégât, prix1, prix2 , monnaie, description, date_creation, id_serveur, id_utilisateur)
                                                             VALUES (NULL, :nom, :type, :categorie, :qualite, :degat, :prix1, :prix2, :monnaie, :description, CURDATE(), $id_serveur, $id_utilisateur)");
+                    }elseif(isset($_POST['modifier'])){
+                        $creation = $pdo->prepare("UPDATE arme SET nom = :nom, type = :type, categorie = :categorie, qualité = :qualite, dégât = :degat, 
+                                                                    prix1 = :prix1, prix2 = :prix2, monnaie = :monnaie, description = :description
+                                                                    WHERE id_arme = ".$_GET['id']."");
+                    }
 
                     $creation->bindParam(':nom', $nom, PDO::PARAM_STR);
                     $creation->bindParam(':type', $typeBDD, PDO::PARAM_STR);
@@ -269,7 +306,7 @@ if(isset($_GET['action']) && $_GET['action'] == 'creation' && isset($_POST['cree
                 }
 
 
-            // Ajout armure
+            // Traitement des données propre aux armures
             }elseif($_GET['type'] == 'armure' && isset($_POST['armure'])
                                             && isset($_POST['froid'])
                                             && isset($_POST['chaleur'])
@@ -288,8 +325,14 @@ if(isset($_GET['action']) && $_GET['action'] == 'creation' && isset($_POST['cree
 
                 if(empty($msg)){
 
-                    $creation = $pdo->prepare("INSERT INTO armure (id_armure, nom, type, categorie, qualité, armure, froid, chaleur, durabilité, prix1, prix2 , monnaie, description, date_creation, id_serveur, id_utilisateur)
+                    if(isset($_POST['creer'])){
+                        $creation = $pdo->prepare("INSERT INTO armure (id_armure, nom, type, categorie, qualité, armure, froid, chaleur, durabilité, prix1, prix2 , monnaie, description, date_creation, id_serveur, id_utilisateur)
                                                             VALUES (NULL, :nom, :type, :categorie, :qualite, :armure, :froid, :chaleur, :durabilite, :prix1, :prix2, :monnaie, :description, CURDATE(), $id_serveur, $id_utilisateur)");
+                    }elseif(isset($_POST['modifier'])){
+                        $creation = $pdo->prepare("UPDATE armure SET nom = :nom, type = :type, categorie = :categorie, qualité = :qualite, armure = :armure, froid = :froid, chaleur = :chaleur, 
+                                                                        durabilité = :durabilite, prix1 = :prix1, prix2 = :prix2, monnaie = :monnaie, description = :description
+                                                                        WHERE id_armure = ".$_GET['id']."");
+                    }
 
                     $creation->bindParam(':nom', $nom, PDO::PARAM_STR);
                     $creation->bindParam(':type', $typeBDD, PDO::PARAM_STR);
@@ -304,15 +347,9 @@ if(isset($_GET['action']) && $_GET['action'] == 'creation' && isset($_POST['cree
                     $creation->bindParam(':monnaie', $monnaie, PDO::PARAM_STR);
                     $creation->bindParam(':description', $description, PDO::PARAM_STR);
                 }
-
-
             }
-
-
         }
- 
         $creation->execute();
-
     }
 }
 
@@ -517,14 +554,14 @@ include '../inc/nav.inc.php';
             </div>
 
             <div class="block-prix">
-                <div class="prix1">
-                    <label for="prix1" style="<?= (empty($_POST['prix1']) && empty($prix1))?'display: none':'' ?>">Prix de <?= ($type_produit == 'creature')?'la créature':'l\'objet' ?></label>
+                <div class="prix1" style="<?= ($typeBDD == 'plan')?'display: none':'' ?>">
+                    <label for="prix1">Prix de <?= ($type_produit == 'creature')?'la créature':'l\'objet' ?></label>
                     <input type="text" id="prix1" name="prix1" value="<?= (is_numeric($prix1))?$prix1:'' ?>">
                 </div>
 <?php
                 if($type_produit != 'creature'){
 ?>
-                    <div class="prix2" style="<?= (empty($_POST['prix2']) && empty($prix2))?'display: none':'' ?>;">
+                    <div class="prix2" style="<?= ($typeBDD == 'deux' || $typeBDD == 'plan')?'':'display: none' ?>;">
                         <label for="prix2">Prix du plan</label>
                         <input type="text" id="prix2" name="prix2" value="<?= (is_numeric($prix2))?$prix2:'' ?>">
                     </div>
@@ -533,7 +570,7 @@ include '../inc/nav.inc.php';
 ?>
                 <div class="monnaie">
                     <label for="monnaie">Monnaie</label>
-                    <input type="text" id="monnaie" name="monnaie" value="<?= (empty($_SESSION['serveur']['monnaie'])?"":$_SESSION['serveur']['monnaie']); ?>">
+                    <input type="text" id="monnaie" name="monnaie" value="<?php if(!empty($monnaie)) echo $monnaie; elseif(!empty($_SESSION['serveur']['monnaie'])) echo $_SESSION['serveur']['monnaie']; ?>">
                 </div>
 
             </div>

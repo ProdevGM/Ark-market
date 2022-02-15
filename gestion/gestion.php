@@ -4,10 +4,10 @@ include '../inc/init.inc.php';
 include '../inc/fonction.inc.php';
 
 
-$requete_total_creature = "SELECT * FROM creature ORDER BY date_creation DESC";
-$requete_total_selle = "SELECT * FROM selle ORDER BY date_creation DESC";
-$requete_total_arme = "SELECT * FROM arme ORDER BY date_creation DESC";
-$requete_total_armure = "SELECT * FROM armure ORDER BY date_creation DESC";
+$requete_total_creature = "SELECT * FROM creature WHERE id_utilisateur = ".$_SESSION['utilisateur']['id_utilisateur']." ORDER BY date_creation DESC";
+$requete_total_selle = "SELECT * FROM selle WHERE id_utilisateur = ".$_SESSION['utilisateur']['id_utilisateur']." ORDER BY date_creation DESC";
+$requete_total_arme = "SELECT * FROM arme WHERE id_utilisateur = ".$_SESSION['utilisateur']['id_utilisateur']." ORDER BY date_creation DESC";
+$requete_total_armure = "SELECT * FROM armure WHERE id_utilisateur = ".$_SESSION['utilisateur']['id_utilisateur']." ORDER BY date_creation DESC";
 
 $pdo_total_creature = $pdo->query($requete_total_creature);
 $pdo_total_selle = $pdo->query($requete_total_selle);

@@ -151,7 +151,7 @@ include 'inc/nav.inc.php';
 								<p class="commentaire"><?= $creature['commentaire'] ?></p>
 							</div>
 							<div class="block-prix text-right text-md-center col-4 col-md-12">
-								<p class="prix"><?= $creature['prix'].' '.$creature['monnaie'] ?></p>
+								<p class="prix"><?= $creature['prix1'].' '.$creature['monnaie'] ?></p>
 							</div>
 <?php
 							if($serveur == false){ // Affichage du nom du serveur si non connecté ou absence de serveur favori
