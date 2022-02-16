@@ -4,6 +4,76 @@ include '../inc/init.inc.php';
 include '../inc/fonction.inc.php';
 
 
+// Contrôle connexion utilisateur
+if(!user_is_connect()){
+    header('location:http://ark-market/index.php');
+}
+
+
+// Déclaration des variables
+$showAccordeon = false; // Variable pour l'étude de l'url précédente
+
+
+
+
+/* ************************************************************ */
+/* ************************************************************ */
+// ÉTUDE DE L'URL PRÉCÉDENTE AFIN D'OUVRIR LE BON OUVRIR ACCORDEON
+/* ************************************************************ */
+/* ************************************************************ */
+
+$urlPrecedent = parse_url($_SERVER['HTTP_REFERER']);
+vd($urlPrecedent);
+if(isset($urlPrecedent) && $urlPrecedent['path'] == '/gestion/ajout.php'){
+
+    if(strpos($urlPrecedent['query'], 'type=creature'))
+        $showAccordeon = 'creature';
+    elseif(strpos($urlPrecedent['query'], 'type=selle'))
+        $showAccordeon = 'selle';
+    elseif(strpos($urlPrecedent['query'], 'type=arme'))
+        $showAccordeon = 'arme';
+    elseif(strpos($urlPrecedent['query'], 'type=armure'))
+        $showAccordeon = 'armure';
+}
+
+
+/* *********************************************** */
+/* *********************************************** */
+// AFFICHAGE DES MESSAGES DE CONFIRMATION ET D'ERREUR
+/* *********************************************** */
+/* *********************************************** */
+
+if(isset($_GET['notif'])){
+
+    switch($_GET['notif']){
+
+        case 'supTrue' :
+            $msg = 'Votre article a été supprimer';
+        break;
+        case 'supFalse' :
+            $msg = 'Votre article n\'a pas pu être supprimé. Veuillez réessayer ultérieurement ou contacter le modérateur';
+        break;
+
+        case 'creaModifTrue' :
+            $msg = 'Votre article a été créé/modifié';
+        break;
+        case 'creaModifFalse' :
+            $msg = 'Votre article n\'a pas pu être créé/modifié. Veuillez réessayer ultérieurement ou contacter le modérateur';
+        break;
+    }
+}
+
+
+
+
+
+
+/* ************************************************* */
+/* ************************************************* */
+// RÉCUPÉRATION DE LA LISTE DE PRODUIT DE L'UTILISATEUR
+/* ************************************************* */
+/* ************************************************* */
+
 $requete_total_creature = "SELECT * FROM creature WHERE id_utilisateur = ".$_SESSION['utilisateur']['id_utilisateur']." ORDER BY date_creation DESC";
 $requete_total_selle = "SELECT * FROM selle WHERE id_utilisateur = ".$_SESSION['utilisateur']['id_utilisateur']." ORDER BY date_creation DESC";
 $requete_total_arme = "SELECT * FROM arme WHERE id_utilisateur = ".$_SESSION['utilisateur']['id_utilisateur']." ORDER BY date_creation DESC";
@@ -22,6 +92,8 @@ include '../inc/nav.inc.php';
 <main class="gestion">
     <div class="container">
 
+        <p><?= $msg ?></p>
+
         <p class="gtitre text-center"> MON ETALE</p>
 
         <!-- BLOCK CREATURE -->
@@ -32,7 +104,7 @@ include '../inc/nav.inc.php';
                 <a class="col-2 text-center" href="<?= URL ?>gestion/ajout.php?action=creation&type=creature">Ajouter un produit</a>
             </div>
 
-            <div class="collapse block-produit" id="total-creature">
+            <div class="collapse block-produit <?= ($showAccordeon == 'creature'  || (isset($_GET['type']) && $_GET['type'] == 'creature'))?'show':'' ?>" id="total-creature">
                 <div class="card card-body">
 <?php
                     while($total_creature = $pdo_total_creature->fetch(PDO::FETCH_ASSOC)){
@@ -54,10 +126,7 @@ include '../inc/nav.inc.php';
                                 <p class="initpad col-4 col-md-2"><?= $total_creature['date_creation'] ?></p>
                                 <div class="initpad action col-2 col-md-1 row justify-content-end">
                                     <a href="<?= URL ?>gestion/ajout.php?action=modification&type=creature&id=<?= $total_creature['id_creature'] ?>" class="col-2"><img src="<?= URL ?>/image/site/crayon_vert.png" alt=""></a>
-                                    <a hraf="gestion/ajout.php?action=suppimer&type=creature&id=<?= $total_creature['id_creature'] ?>" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#staticBackdrop">
-                                        <img src="<?= URL ?>/image/site/croix_rouge.png" alt="">
-                                    </a>
-                                    
+                                    <a href="<?= URL ?>gestion/ajout.php?action=supprimer&type=creature&id=<?= $total_creature['id_creature'] ?>" class="col-2"><img src="<?= URL ?>/image/site/croix_rouge.png" alt=""></a>
                                 </div>
 
                         </button>
@@ -77,7 +146,7 @@ include '../inc/nav.inc.php';
                 <a class="col-2 text-center" href="<?= URL ?>gestion/ajout.php?action=creation&type=selle">Ajouter un produit</a>
             </div>
 
-            <div class="collapse block-produit" id="total-selle">
+            <div class="collapse block-produit <?= ($showAccordeon == 'selle'  || (isset($_GET['type']) && $_GET['type'] == 'selle'))?'show':'' ?>" id="total-selle">
                 <div class="card card-body">
 <?php
                     while($total_selle = $pdo_total_selle->fetch(PDO::FETCH_ASSOC)){
@@ -110,7 +179,7 @@ include '../inc/nav.inc.php';
                 <a class="col-2 text-center" href="<?= URL ?>gestion/ajout.php?action=creation&type=arme">Ajouter un produit</a>
             </div>
 
-            <div class="collapse block-produit" id="total-arme">
+            <div class="collapse block-produit <?= ($showAccordeon == 'arme' || (isset($_GET['type']) && $_GET['type'] == 'arme'))?'show':'' ?>" id="total-arme">
                 <div class="card card-body">
 <?php
                     while($total_arme = $pdo_total_arme->fetch(PDO::FETCH_ASSOC)){
@@ -143,7 +212,7 @@ include '../inc/nav.inc.php';
                 <a class="col-2 text-center" href="<?= URL ?>gestion/ajout.php?action=creation&type=armure">Ajouter un produit</a>
             </div>
 
-            <div class="collapse block-produit" id="total-armure">
+            <div class="collapse block-produit <?= ($showAccordeon == 'armure' || (isset($_GET['type']) && $_GET['type'] == 'armure'))?'show':'' ?>" id="total-armure">
                 <div class="card card-body">
 <?php
                     while($total_armure = $pdo_total_armure->fetch(PDO::FETCH_ASSOC)){
@@ -173,27 +242,6 @@ include '../inc/nav.inc.php';
         </div>
 
 
-    </div>
-
-
-
-    <!-- Modal d'avertissement et de confirmation de suppression de produit (BOOTSTRAP)-->
-    <div class="modal fade" id="staticBackdrop" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="staticBackdropLabel">Suppresion de produit</h5>
-                </div>
-                <div class="modal-body">
-                    <p>Toutes suppression est définitive</p>
-                    <p>Êtes-vous certain de vouloir supprimer ce produit ?</p>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Non</button>
-                    <button type="button" class="btn btn-primary" id="suparticle">Supprimer</button>
-                </div>
-            </div>
-        </div>
     </div>
 
 <?php

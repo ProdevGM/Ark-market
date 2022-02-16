@@ -3,13 +3,19 @@
 include '../inc/init.inc.php';
 include '../inc/fonction.inc.php';
 
-// Déclaration des variables
+
+// Contrôle connexion utilisateur
+if(!user_is_connect()){
+    header('location:http://ark-market/index.php');
+}
+
+
 $tab_datalist = ''; 
 $type_produit = ''; // Permettra d'afficher les différents champs du formulaire en fonction du type d'objet créé
 
 $nom = '';
 /* $type = ''; */ // Array
-$typeBDD = ''; // Format stockable dans la BDD
+$typeBDD = 'objet'; // Format stockable dans la BDD
 $qualite = '';
 $degat = '';
 $armure = '';
@@ -53,7 +59,12 @@ if(isset($_GET['action']) && $_GET['action'] == 'supprimer'
 
         if($info['id_utilisateur'] == $_SESSION['utilisateur']['id_utilisateur']){ // Contrôle si le produit appartient bien
 
-            $delete = $pdo->query("DELETE FROM ".$_GET['type']." WHERE id_".$_GET['type']." = ".$_GET['id']."");
+            $delete = $pdo->exec("DELETE FROM ".$_GET['type']." WHERE id_".$_GET['type']." = ".$_GET['id']."");
+
+            if($delete)
+                header('location:http://ark-market/gestion/gestion.php?type='.$_GET['type'].'&notif=supTrue');
+            else
+                header('location:http://ark-market/gestion/gestion.php?type='.$_GET['type'].'&notif=supFalse');
 
         }else
             header('location:http://ark-market/index.php');
@@ -127,14 +138,14 @@ if(isset($_GET['action']) && $_GET['action'] == 'modification'
 
 /* ************************************************************************ */
 /* ************************************************************************ */
-// RECUPERATION ET CONTRÔLE DES DONNÉES PUIS CREATION / MODIFICATION DE LA BDD
+// RECUPÉRATION ET CONTRÔLE DES DONNÉES PUIS CREATION / MODIFICATION DE LA BDD
 /* ************************************************************************ */
 /* ************************************************************************ */
 
 if(isset($_GET['action']) && ($_GET['action'] == 'creation' || $_GET['action'] == 'modification')
                           && (isset($_POST['creer']) || isset($_POST['modifier']))){
 
-    // 
+    // Traitement des données communes à tous les articles                        
     if(isset($_GET['type']) && isset($_POST['nom'])
                             && isset($_POST['description'])
                             && isset($_POST['monnaie'])
@@ -195,7 +206,7 @@ if(isset($_GET['action']) && ($_GET['action'] == 'creation' || $_GET['action'] =
 
                 if(isset($_POST['creer'])){
                     $creation = $pdo->prepare("INSERT INTO creature (id_creature, nom, categorie, sexe, niveau, vie, energie, oxygène, nourriture, poids, attaque, vitesse, prix1, monnaie, description, date_creation, id_serveur, id_utilisateur)
-                                                        VALUES (NULL, :nom, :categorie, :sexe, :niveau, :vie, :energie, :oxygene, :nourriture, :poids, :attaque, :vitesse, :prix1, :monnaie, :description, CURDATE(), $id_serveur, $id_utilisateur)");
+                                                        VALUES (NULL, :nom, :categorie, :sexe, :niveau, :vie, :energie, :oxygene, :nourriture, :poids, :attaque, :vitesse, :prix1, :monnaie, :description, NOW(), $id_serveur, $id_utilisateur)");
                 }elseif(isset($_POST['modifier'])){
                     $creation = $pdo->prepare("UPDATE creature SET nom = :nom, categorie = :categorie, sexe = :sexe, niveau = :niveau, vie = :vie, energie = :energie, oxygène = :oxygene, nourriture = :nourriture, 
                                                                     poids = :poids, attaque = :attaque, vitesse = :vitesse, prix1 = :prix1, monnaie = :monnaie, description = :description
@@ -284,7 +295,7 @@ if(isset($_GET['action']) && ($_GET['action'] == 'creation' || $_GET['action'] =
 
                     if(isset($_POST['creer'])){
                         $creation = $pdo->prepare("INSERT INTO selle (id_selle, nom, type, categorie, qualité, armure, prix1, prix2 , monnaie, description, date_creation, id_serveur, id_utilisateur)
-                                                            VALUES (NULL, :nom, :type, :categorie, :qualite, :armure, :prix1, :prix2, :monnaie, :description, CURDATE(), $id_serveur, $id_utilisateur)");
+                                                            VALUES (NULL, :nom, :type, :categorie, :qualite, :armure, :prix1, :prix2, :monnaie, :description, NOW(), $id_serveur, $id_utilisateur)");
                     }elseif(isset($_POST['modifier'])){
                         $creation = $pdo->prepare("UPDATE selle SET nom = :nom, type = :type, categorie = :categorie, qualité = :qualite, armure = :armure, 
                                                                     prix1 = :prix1, prix2 = :prix2, monnaie = :monnaie, description = :description
@@ -318,7 +329,7 @@ if(isset($_GET['action']) && ($_GET['action'] == 'creation' || $_GET['action'] =
 
                     if(isset($_POST['creer'])){
                         $creation = $pdo->prepare("INSERT INTO arme (id_arme, nom, type, categorie, qualité, dégât, prix1, prix2 , monnaie, description, date_creation, id_serveur, id_utilisateur)
-                                                            VALUES (NULL, :nom, :type, :categorie, :qualite, :degat, :prix1, :prix2, :monnaie, :description, CURDATE(), $id_serveur, $id_utilisateur)");
+                                                            VALUES (NULL, :nom, :type, :categorie, :qualite, :degat, :prix1, :prix2, :monnaie, :description, NOW(), $id_serveur, $id_utilisateur)");
                     }elseif(isset($_POST['modifier'])){
                         $creation = $pdo->prepare("UPDATE arme SET nom = :nom, type = :type, categorie = :categorie, qualité = :qualite, dégât = :degat, 
                                                                     prix1 = :prix1, prix2 = :prix2, monnaie = :monnaie, description = :description
@@ -358,7 +369,7 @@ if(isset($_GET['action']) && ($_GET['action'] == 'creation' || $_GET['action'] =
 
                     if(isset($_POST['creer'])){
                         $creation = $pdo->prepare("INSERT INTO armure (id_armure, nom, type, categorie, qualité, armure, froid, chaleur, durabilité, prix1, prix2 , monnaie, description, date_creation, id_serveur, id_utilisateur)
-                                                            VALUES (NULL, :nom, :type, :categorie, :qualite, :armure, :froid, :chaleur, :durabilite, :prix1, :prix2, :monnaie, :description, CURDATE(), $id_serveur, $id_utilisateur)");
+                                                            VALUES (NULL, :nom, :type, :categorie, :qualite, :armure, :froid, :chaleur, :durabilite, :prix1, :prix2, :monnaie, :description, NOW(), $id_serveur, $id_utilisateur)");
                     }elseif(isset($_POST['modifier'])){
                         $creation = $pdo->prepare("UPDATE armure SET nom = :nom, type = :type, categorie = :categorie, qualité = :qualite, armure = :armure, froid = :froid, chaleur = :chaleur, 
                                                                         durabilité = :durabilite, prix1 = :prix1, prix2 = :prix2, monnaie = :monnaie, description = :description
@@ -381,6 +392,11 @@ if(isset($_GET['action']) && ($_GET['action'] == 'creation' || $_GET['action'] =
             }
         }
         $creation->execute();
+
+        if($creation)
+            header('location:http://ark-market/gestion/gestion.php?notif=creaModifTrue');
+        else
+            header('location:http://ark-market/gestion/gestion.php?notif=creaModifFalse');
     }
 }
 

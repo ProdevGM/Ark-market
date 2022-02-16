@@ -4,6 +4,7 @@
 A/ ajout.php
     1/ Contrôle des variables d'entrées avant création dans BDD
     3/ Bloquer le nom du produit lors de la modification
+    4/ Confirmer la suppression d'un produit par un modal
 
 
 
