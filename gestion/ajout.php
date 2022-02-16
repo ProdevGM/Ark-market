@@ -283,7 +283,7 @@ if(isset($_GET['action']) && ($_GET['action'] == 'creation' || $_GET['action'] =
             // Traitement des données propre aux selles
             if($_GET['type'] == 'selle' && isset($_POST['armure'])){
 
-                $categorie = rechercheCategorie($tab_creature, $nom);
+                $categorie = rechercheCategorie($tab_selle, $nom);
                 $armure = trim($_POST['armure']);
 
                 /* 
@@ -411,7 +411,7 @@ if(!empty($_GET['type'])){
             $type_produit = 'creature';
             break;
         case 'selle' :
-            $tab_datalist = array_merge($tab_creature['terrestre'], $tab_creature['volant'], $tab_creature['aquatique']);
+            $tab_datalist = array_merge($tab_selle['terrestre'], $tab_selle['volant'], $tab_selle['aquatique']);
             $type_produit = 'selle';
             break;
         case 'arme' :
@@ -463,7 +463,19 @@ include '../inc/nav.inc.php';
             </div>
 
 
+<?php       // Bloc pour les selles (selle ou plateforme)
+            if($type_produit == 'selle'){
+?>
+                <div class="taille" style="display: none;">
+                    <input type="radio" name="taille" id="taille" value="selle"> Selle
+                    <input type="radio" name="taille" id="taille" value="plateforme"> Plateforme
+                </div>
 <?php
+            }
+?>
+
+
+<?php       // Bloc plan, objet ou les deux pour tous les produits sauf les créatures
             if($type_produit != 'creature'){
 ?>
             <div class="block-type-vente">
@@ -475,7 +487,7 @@ include '../inc/nav.inc.php';
 ?>
 
 
-<?php // Bloc caractéristique des créatures
+<?php       // Bloc caractéristique des créatures
             if($type_produit == 'creature'){
 ?>
                 <div class="block-caract-creature">
@@ -513,7 +525,7 @@ include '../inc/nav.inc.php';
 ?>
 
 
-<?php   // Bloc caractéristique des objets (armure, protection et qualité)
+<?php       // Bloc caractéristique des objets (armure, protection et qualité)
             if($type_produit != 'creature'){
 ?>
                 <div class="block-caract-objet">
@@ -529,7 +541,8 @@ include '../inc/nav.inc.php';
                             <option value="Mythique" <?= ($qualite == 'Mythique')?"checked":'' ?>>Mythique</option>
                         </select>
                     </div>
-<?php // Bloc armure pour les selles et les armures
+
+<?php               // Bloc armure pour les selles et les armures
                     if($type_produit == 'selle' || $type_produit == 'armure'){
 ?>
                         <div class="armure">
@@ -537,7 +550,7 @@ include '../inc/nav.inc.php';
                             <input type="text" id="armure" name="armure" placeholder="Armure" value="<?= $armure ?>">
                         </div>
 
-<?php // Bloc résistance chaleur, froid et durabilité pour les armures
+<?php                   // Bloc résistance chaleur, froid et durabilité pour les armures
                         if($type_produit == 'armure'){
 ?>
                             <div class="block-res">
@@ -558,7 +571,8 @@ include '../inc/nav.inc.php';
                         }
 ?>
 
-<?php // Bloc dégât pour les amres
+
+<?php               // Bloc dégât pour les amres
                     }elseif($type_produit == 'arme'){
 ?>
                     <div class="degat">

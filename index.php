@@ -177,7 +177,7 @@ include 'inc/nav.inc.php';
 						<a href="#" class="block col-12 col-sm-11 col-md-3 row">
 
 							<div class="block-imllustration d-none d-lg-flex col-lg-4">
-								<img src="image/site/temporaire.png" alt="image de la selle" class="w-100">
+								<img src="<?= URL ?>image/produit/selle/<?= $selle['categorie'] ?>/<?= str_replace(' ', '_', $selle['nom']) ?>.png" alt="image de la selle" class="w-100">
 							</div>
 							<div class="block-d col-8 col-md-12 col-lg-8 row justify-content-between align-items-between initmarg">
 								<div class="block-nom text-md-center text-lg-left col-8 col-sm-7 col-md-12">
@@ -223,7 +223,7 @@ include 'inc/nav.inc.php';
 						<a href="#" class="block col-12 col-sm-11 col-md-3 row">
 
 							<div class="block-imllustration d-none d-lg-flex col-lg-4">
-								<img src="image/site/temporaire.png" alt="image de l'arme" class="w-100">
+								<img src="<?= URL ?>image/produit/arme/<?= $arme['categorie'] ?>/<?= str_replace(' ', '_', $arme['nom']) ?>.png" alt="image de l'arme" class="w-100">
 							</div>
 							<div class="block-d col-8 col-md-12 col-lg-8 row justify-content-between align-items-between initmarg">
 								<div class="block-nom text-md-center text-lg-left col-8 col-sm-7 col-md-12">
@@ -273,7 +273,7 @@ include 'inc/nav.inc.php';
 								<p class="nom"><?= $armure['nom'] ?><?= ($armure['type'] == "plan" || $armure['type'] == "deux") ? ' (BP)' : '' ?></p>
 							</div>						
 							<div class="block-imllustration d-none d-lg-flex col-lg-4">
-								<img src="image/site/temporaire.png" alt="image de l'armure" class="w-100">
+								<img src="<?= URL ?>image/produit/armure/<?= $armure['categorie'] ?>/<?= str_replace(' ', '_', $armure['nom']) ?>.png" alt="image de l'armure" class="w-100">
 							</div>
 							<div class="block-d col-3 col-sm-3 col-md-12 col-lg-8 row justify-content-between align-items-between initmarg">
 								<div class="block-armure text-center text-lg-left col-md-12">

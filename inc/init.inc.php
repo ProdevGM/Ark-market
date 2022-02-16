@@ -40,15 +40,23 @@ $tab_creature = [
 	'aquatique' => ['Basilosaure', 'Baudroie abyssale', 'Coelacanthe', 'Dunkleosteus', 'Electrophorus', 'Ichthyosaure', 'Lamproie', 'Leedsichthys', 'Liopleurodon', 'Manta', 'Mégachelon', 'Mégalodon', 'Mosasaure', 'Piranha', 'Plésiosaure', 'Saumon', 'Tusoteuthis']
 ];
 
+$tab_selle = [
+	'terrestre' => ['Allosaure', 'Amargasaurus', 'Ankylosaure', 'Aranéo', 'Arthropleura', 'Baryonyx', 'Basilic', 'Beelzebufo', 'Brontosaure', 'Carbonemys', 'Carnotaure', 'Castoroides', 'Chalicotherium', 'Daeodon', 'Deinonychus', 'Diplodocus', 'Doedicurus', 'Dragon Rocheux', 'Equus', 'Gacha', 'gallimimus', 'giganotosaure', 'golem_de_pierre', 'hyène', 'iguanodon', 'kaprosuchus', 'karkinos', 'lézard_épineux', 'magmasaure', 'mammouth', 'mantis', 'megalania', 'mégalocéros', 'mégalosaure', 'mégathérium', 'morellatops', 'ours_sinistre', 'pachycéphalosaure', 'pachyrhinosaure', 'paraceratherium', 'parasaure', 'phiomia', 'brontosaure', 'paraceratherium', 'titanosaure', 'procoptodon', 'pulmonoscorpius', 'raptor', 'rat_des_profondeurs', 'ravageur', 'rhinocéros_laineux', 'sarcosuchus', 'smilodon', 'spinosaure', 'stégosaure', 'thérizinosaure', 'thylacoleo', 't-rex', 'tricératops', 'vélonasaure', 'yutyrannus'],
+	'volant' => ['argentavis', 'astrocetus', 'astrodelphis', 'harfang_des_neiges', 'lymantria', 'maewing', 'managarm', 'oiseau-terreur', 'pelagornis', 'ptéranodon', 'quetzal', 'sacagaz', 'tapejara', 'tropéognathus'],
+	'aquatique' => ['basilosaure', 'dunkleosteus', 'ichthyosaure', 'manta', 'mégalodon', 'mosasaure', 'plésiosaure', 'tusoteuthis']
+];
+
+$tab_plateforme = ['mégachelon', 'mosasaure', 'plésiosaure', 'brontosaure', 'brontosaure', 'paraceratherium', 'titanosaure'];
+
 $tab_arme = [
 	'outil' => ['Pioche en pierre', 'Hache en pierre', 'Torche', 'Bâton lumineux', 'Pioche en métal', 'Hache en métal', 'Faucille', 'Piolet', 'Outil de taxidermie', 'Pinces', 'Lasso', 'Tronçonneuse', 'Foreuse'],
 	'mélé' => ['Lance en bois', 'Lance en métal', 'Massue', 'Épée', 'Matraque électrique', 'Lance de joute', 'Épée Tek', 'Éventreuses Tek'],
-	'bouclier' => ['Bouclier en bois', 'Bouclier en métal', 'Bouclier Anti-Émeute', 'Bouclier Tek'],
+	'bouclier' => ['Bouclier en bois', 'Bouclier en métal', 'Bouclier anti-émeute', 'Bouclier Tek'],
 	'jet' => ['Lance-pierre', 'Boomerang', 'Bolas', 'Fouet', 'Arc', 'Arbalète', 'Arc à poulie', 'Arc Tek'],
 	'feu' => ['Revolver', 'Fusil à canon long', 'Fusil à canon scié', 'Pistolet semi-auto', 'Fusil d\'assaut', 'Fusil de précision', 'Harpon', 'Lance-flamme', 'Lanterne de Charge', 'Minigun', 'Fusil Tek', 'Sniper Tek', 'Missile de croisière', 'Lance-grenade Tek', 'Canon d\'épaule Tek', 'Pistolet Tek'],
 	'accessoire' => ['Lampe tactique', 'Viseur Holographique', 'Viseur Laser', 'Lunette de visée', 'Silencieux'],
 	'explosif' => ['Grenade', 'Bocal de pétrole', 'Piège explosif improvisé', 'Grenade à fragmentation', 'Charge de C4', 'Lance-Roquettes', 'Mines sous-marines', 'Grenade Tek', 'Grenade de Gravité Tek'],
-	'piège' => ['Grenade fumigène', 'Grenade empoisonnée', 'Piège avec alarme sonore', 'Piège narcotique', 'Piège à Ours', 'Grand Piège à Ours', ''],
+	'piège' => ['Grenade fumigène', 'Grenade empoisonnée', 'Piège avec alarme sonore', 'Piège narcotique', 'Piège à Ours', 'Grand Piège à Ours'],
 	'tourelle' => ['Tourelle automatique', 'Tourelle automatique lourde', 'Tourelle Baliste', 'Tourelle Catapulte', 'Tourelle Minigun', 'Tourelle Lance-Roquettes', 'Canon', 'Tourelle Tek'],
 	'tek' => ['Fusil Tek', 'Grenade Tek', 'Tourelle Tek', 'Épée Tek', 'Bouclier Tek', 'Sniper Tek', 'Grenade de Gravité Tek', 'Missile de croisière', 'Éventreuses Tek', 'Lance-grenade Tek', 'Canon d\'épaule Tek', 'Pistolet Tek', 'Arc Tek']
 ];
@@ -64,7 +72,8 @@ $tab_armure = [
 	'radiation' => ['Casque anti-radiation', 'Veste anti-radiation', 'Gants anti-radiation', 'Pantalon anti-radiation', 'Bottes anti-radiation'],
 	'plongé' => ['Masque de Plongée', 'Bouteille de Plongée', 'Combinaison de Plongée', 'Palmes de Plongée'],
 	'émeute' => ['Casque Anti-Émeute', 'Veste Anti-Émeute', 'Gants Anti-Émeute', 'Pantalon Anti-Émeute', 'Bottes Anti-Émeute'],
-	'tek' => ['Casque Tek', 'Plastron Tek', 'Gantelets Tek', 'Jambières Tek', 'Bottes Tek']
+	'tek' => ['Casque Tek', 'Plastron Tek', 'Gantelets Tek', 'Jambières Tek', 'Bottes Tek'],
+	'utilitaire' => ['Attache pour moteur de tyrolienne', 'Casque de mineur', 'Lunettes de vision nocturne', 'Masque à gaz', 'Planeur dorsal', 'Menottes']
 ];
 
 

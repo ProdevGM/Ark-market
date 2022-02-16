@@ -109,7 +109,7 @@ include '../inc/nav.inc.php';
 <?php
                     while($total_creature = $pdo_total_creature->fetch(PDO::FETCH_ASSOC)){
 ?>
-                        <button type="button" class="initmarg produit row">
+                        <div class="initmarg produit row">
 
                                 <p class="initpad col-4 col-md-2"><?= ucfirst($total_creature['nom']) ?></p>
                                 <p class="initpad col-2 col-lg-1"><?= $total_creature['niveau'] ?></p>
@@ -129,7 +129,7 @@ include '../inc/nav.inc.php';
                                     <a href="<?= URL ?>gestion/ajout.php?action=supprimer&type=creature&id=<?= $total_creature['id_creature'] ?>" class="col-2"><img src="<?= URL ?>/image/site/croix_rouge.png" alt=""></a>
                                 </div>
 
-                        </button>
+                        </div>
 <?php
                     }
 ?>
