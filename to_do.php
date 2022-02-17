@@ -26,5 +26,4 @@ Rappel :
 
 
 EN COURS :
-Gestion en javascript du tableau $tab_plateforme afin d'influencer les input type radio (selle plateforme)
-pensez à mettre à jour l'insertion des données avec la nouvelle ligne "taille" de la BDD selle
+Contrôle des variables d'entrée pour la création ou la modification de produit : ajout.php l.180
