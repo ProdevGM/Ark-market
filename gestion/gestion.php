@@ -37,6 +37,8 @@ if(isset($urlPrecedent) && $urlPrecedent['path'] == '/gestion/ajout.php'){
 }
 
 
+
+
 /* *********************************************** */
 /* *********************************************** */
 // AFFICHAGE DES MESSAGES DE CONFIRMATION ET D'ERREUR

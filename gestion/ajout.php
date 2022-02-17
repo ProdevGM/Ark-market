@@ -19,6 +19,7 @@ $typeBDD = 'objet'; // Format stockable dans la BDD
 $qualite = '';
 $degat = '';
 $armure = '';
+$taille = '';
 $froid = '';
 $chaleur = '';
 $durabilite = '';
@@ -36,6 +37,9 @@ $nourriture = '';
 $poids = '';
 $attaque = '';
 $vitesse = '';
+
+$produit_plateforme_seule = true; // Variable de gestion d'affichage input type radio pour la partie selle. Init à true pour display none au chargement initiale de la page
+$produit_plateforme = '';
 
 
 
@@ -57,7 +61,7 @@ if(isset($_GET['action']) && $_GET['action'] == 'supprimer'
 
         $info = $PDO_info->fetch(PDO::FETCH_ASSOC);
 
-        if($info['id_utilisateur'] == $_SESSION['utilisateur']['id_utilisateur']){ // Contrôle si le produit appartient bien
+        if($info['id_utilisateur'] == $_SESSION['utilisateur']['id_utilisateur']){ // Contrôle si le produit appartient bien à l'utilisateur
 
             $delete = $pdo->exec("DELETE FROM ".$_GET['type']." WHERE id_".$_GET['type']." = ".$_GET['id']."");
 
@@ -116,9 +120,16 @@ if(isset($_GET['action']) && $_GET['action'] == 'modification'
             $prix2 = $recuperation['prix2'];
             $typeBDD = $recuperation['type'];
 
-            if( $_GET['type'] == 'selle')
+            if( $_GET['type'] == 'selle'){
+
+                // Permettra de gérer l'affichage de l'input type radio concernant la taille. Cas possible : Créatures peuvant porter selle et plateforme (affichage pour choix de l'utilsiateur), pas de plateforme (non affichage), uniquement plateforme (non affichage mais checked sur input correspondant)
+                $produit_plateforme_seule = strpos($plateforme_seule, $recuperation['nom']); // cf init.inc.php pour varialbe plateforme_seul. String regroupant les créatures ne pouvant porter que des plateforme
+                $produit_plateforme = strpos($plateforme, $recuperation['nom']); // cf init.inc.php pour varialbe plateforme. String regroupant les créatures portant  que des plateforme
+
+                $taille = $recuperation['taille'];
                 $armure = $recuperation['armure'];
-            elseif($_GET['type'] == 'arme')
+
+            }elseif($_GET['type'] == 'arme')
                 $degat = $recuperation['dégât'];
             elseif($_GET['type'] == 'armure'){
                 $armure = $recuperation['armure'];
@@ -231,11 +242,10 @@ if(isset($_GET['action']) && ($_GET['action'] == 'creation' || $_GET['action'] =
 
 
         // Traitement des données des selles, armes et armures
-        }elseif(($_GET['type'] == 'selle' || $_GET['type'] == 'arme' 
-                                            || $_GET['type'] == 'armure') 
-                                            && isset($_POST['prix2'])
-                                            && isset($_POST['qualite'])
-                                            && isset($_POST['type'])){
+        }elseif(($_GET['type'] == 'selle' || $_GET['type'] == 'arme' || $_GET['type'] == 'armure') 
+                                          && isset($_POST['prix2'])
+                                          && isset($_POST['qualite'])
+                                          && isset($_POST['type'])){
 
             $qualite = trim($_POST['qualite']);
             $type = $_POST['type'];
@@ -281,10 +291,17 @@ if(isset($_GET['action']) && ($_GET['action'] == 'creation' || $_GET['action'] =
 
 
             // Traitement des données propre aux selles
-            if($_GET['type'] == 'selle' && isset($_POST['armure'])){
+            if($_GET['type'] == 'selle' && isset($_POST['armure'])
+                                        && isset($_POST['taille'])
+                                        && ($_POST['taille'] == 'selle' || $_POST['taille'] == 'plateforme')){
+                                         
+                // Permettra de gérer l'affichage de l'input type radio concernant la taille. Cas possible : Créatures peuvant porter selle et plateforme (affichage pour choix de l'utilsiateur), pas de plateforme (non affichage), uniquement plateforme (non affichage mais checked sur input correspondant)
+                $produit_plateforme_seule = strpos($plateforme_seule, $_POST['nom']); // cf init.inc.php pour varialbe plateforme_seul. String regroupant les créatures ne pouvant porter que des plateforme
+                $produit_plateforme = strpos($plateforme, $_POST['nom']); // cf init.inc.php pour varialbe plateforme. String regroupant les créatures portant  que des plateforme
 
                 $categorie = rechercheCategorie($tab_selle, $nom);
                 $armure = trim($_POST['armure']);
+                $taille = trim($_POST['taille']);
 
                 /* 
                 CONTROLE DES VARIABLES D'ENTREES
@@ -294,16 +311,17 @@ if(isset($_GET['action']) && ($_GET['action'] == 'creation' || $_GET['action'] =
                 if(empty($msg)){
 
                     if(isset($_POST['creer'])){
-                        $creation = $pdo->prepare("INSERT INTO selle (id_selle, nom, type, categorie, qualité, armure, prix1, prix2 , monnaie, description, date_creation, id_serveur, id_utilisateur)
-                                                            VALUES (NULL, :nom, :type, :categorie, :qualite, :armure, :prix1, :prix2, :monnaie, :description, NOW(), $id_serveur, $id_utilisateur)");
+                        $creation = $pdo->prepare("INSERT INTO selle (id_selle, nom, type, taille, categorie, qualité, armure, prix1, prix2 , monnaie, description, date_creation, id_serveur, id_utilisateur)
+                                                            VALUES (NULL, :nom, :type, :taille, :categorie, :qualite, :armure, :prix1, :prix2, :monnaie, :description, NOW(), $id_serveur, $id_utilisateur)");
                     }elseif(isset($_POST['modifier'])){
-                        $creation = $pdo->prepare("UPDATE selle SET nom = :nom, type = :type, categorie = :categorie, qualité = :qualite, armure = :armure, 
+                        $creation = $pdo->prepare("UPDATE selle SET nom = :nom, type = :type, taille = :taille, categorie = :categorie, qualité = :qualite, armure = :armure, 
                                                                     prix1 = :prix1, prix2 = :prix2, monnaie = :monnaie, description = :description
                                                                     WHERE id_selle = ".$_GET['id']."");
                     }
     
                     $creation->bindParam(':nom', $nom, PDO::PARAM_STR);
                     $creation->bindParam(':type', $typeBDD, PDO::PARAM_STR);
+                    $creation->bindParam(':taille', $taille, PDO::PARAM_STR);
                     $creation->bindParam(':categorie', $categorie, PDO::PARAM_STR);
                     $creation->bindParam(':qualite', $qualite, PDO::PARAM_STR);
                     $creation->bindParam(':armure', $armure, PDO::PARAM_STR);
@@ -411,7 +429,7 @@ if(!empty($_GET['type'])){
             $type_produit = 'creature';
             break;
         case 'selle' :
-            $tab_datalist = array_merge($tab_selle['terrestre'], $tab_selle['volant'], $tab_selle['aquatique']);
+            $tab_datalist = array_merge($tab_selle['terrestre'], $tab_selle['volant'], $tab_selle['aquatique'], $tab_plateforme['terrestre'], $tab_plateforme['volant'], $tab_plateforme['aquatique']);
             $type_produit = 'selle';
             break;
         case 'arme' :
@@ -450,7 +468,7 @@ include '../inc/nav.inc.php';
         <form method="post" action="">
 
             <div class="block-nom">
-                <input type="text" name="nom" placeholder="Nom" list="list-produit" value="<?= $nom ?>">
+                <input type="text" name="nom" id="nom" placeholder="Nom" list="list-produit" value="<?= $nom ?>">
                 <datalist id="list-produit">
 <?php
                     foreach($tab_datalist AS $produit){
@@ -466,9 +484,9 @@ include '../inc/nav.inc.php';
 <?php       // Bloc pour les selles (selle ou plateforme)
             if($type_produit == 'selle'){
 ?>
-                <div class="taille" style="display: none;">
-                    <input type="radio" name="taille" id="taille" value="selle"> Selle
-                    <input type="radio" name="taille" id="taille" value="plateforme"> Plateforme
+                <div class="taille"  style="<?= ($produit_plateforme_seule || !$produit_plateforme)?'display: none;':'' ?>">
+                    <input type="radio" name="taille" id="taille" class="selle" value="selle" <?=((isset($_POST['taille']) && $_POST['taille'] == 'selle') || (!isset($_POST['taille']) && $taille == 'selle'))?'checked':''?> > Selle
+                    <input type="radio" name="taille" id="taille" class="plateforme" value="plateforme" <?= ((isset($_POST['taille']) && ($produit_plateforme_seule || $_POST['taille'] == 'plateforme')) || (!isset($_POST['taille']) && $taille == 'plateforme'))?'checked':'' ?>> Plateforme
                 </div>
 <?php
             }
