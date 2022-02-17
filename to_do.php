@@ -4,9 +4,8 @@
 
 A/ ajout.php
     1/ Contrôle des variables d'entrées avant création dans BDD
-    3/ Bloquer le nom du produit lors de la modification
     4/ Confirmer la suppression d'un produit par un modal
-    5/ Pour les selles, gérer 
+    5/ Essayer de trouver un moyen de faire en sorte que l'utilisateur ne puisse pas écrire un autre nom que ceux prévu dans la datalist
 
 B/ gestion.php
     1/ Pagination

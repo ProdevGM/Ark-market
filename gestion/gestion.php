@@ -16,14 +16,14 @@ $showAccordeon = false; // Variable pour l'étude de l'url précédente
 
 
 
-/* ************************************************************ */
-/* ************************************************************ */
-// ÉTUDE DE L'URL PRÉCÉDENTE AFIN D'OUVRIR LE BON OUVRIR ACCORDEON
-/* ************************************************************ */
-/* ************************************************************ */
+/* ***************************************************** */
+/* ***************************************************** */
+// ÉTUDE DE L'URL PRÉCÉDENTE AFIN D'OUVRIR LE BON ACCORDEON
+/* ***************************************************** */
+/* ***************************************************** */
 
 $urlPrecedent = parse_url($_SERVER['HTTP_REFERER']);
-vd($urlPrecedent);
+
 if(isset($urlPrecedent) && $urlPrecedent['path'] == '/gestion/ajout.php'){
 
     if(strpos($urlPrecedent['query'], 'type=creature'))

@@ -38,7 +38,7 @@ $poids = '';
 $attaque = '';
 $vitesse = '';
 
-$produit_plateforme_seule = true; // Variable de gestion d'affichage input type radio pour la partie selle. Init à true pour display none au chargement initiale de la page
+$produit_plateforme_seule = true; // Variable de gestion d'affichage input type radio pour la partie selle. Init à true pour display=none au chargement initiale de la page
 $produit_plateforme = '';
 
 
@@ -161,13 +161,31 @@ if(isset($_GET['action']) && ($_GET['action'] == 'creation' || $_GET['action'] =
                             && isset($_POST['description'])
                             && isset($_POST['monnaie'])
                             && isset($_POST['prix1'])){
+                                
+        $id_serveur = $_SESSION['utilisateur']['id_serveur'];
+        $id_utilisateur = $_SESSION['utilisateur']['id_utilisateur'];
         
         $nom = ucfirst(trim($_POST['nom']));
         $description = trim($_POST['description']);
         $monnaie = trim($_POST['monnaie']);
+        
 
-        $id_serveur = $_SESSION['utilisateur']['id_serveur'];
-        $id_utilisateur = $_SESSION['utilisateur']['id_utilisateur'];
+        /* ***************************** */
+        // Contrôle des variables d'entrées
+        /* ***************************** */
+
+        // Contrôle que le nom soit bien dans un des tableaux (cf init.inc.php)
+        $i = '';
+        $tab = 'tab_'.$_GET['type'];
+
+        foreach($$tab AS $indice => $valeur){
+            if(array_search($nom, $$tab[$indice]) !== false)
+                $i++;   
+        }
+        if($i == 0)
+            $msg .= '<p class="alerte-msg"> Veuillez choisir une créature dans la liste fournie </p>';
+
+        //  Contrôle nombre de caractères et type de caractères de la description
 
 
 
@@ -409,12 +427,12 @@ if(isset($_GET['action']) && ($_GET['action'] == 'creation' || $_GET['action'] =
                 }
             }
         }
-        $creation->execute();
+/*         $creation->execute();
 
         if($creation)
             header('location:http://ark-market/gestion/gestion.php?notif=creaModifTrue');
         else
-            header('location:http://ark-market/gestion/gestion.php?notif=creaModifFalse');
+            header('location:http://ark-market/gestion/gestion.php?notif=creaModifFalse'); */
     }
 }
 
@@ -450,7 +468,7 @@ include '../inc/nav.inc.php';
 
 <main class="ajout">
     <div class="container">
-
+<?= $msg ?>
         <p class="gtitre text-center"><?= (isset($_GET['action']) && $_GET['action'] == 'creer')?'Nouveau produit':'Modification de produit' ?></p>
 <?php
         if(isset($_GET['action']) && $_GET['action'] == 'creation'){ // Affichage uniquement en cas de création de produit. Pas nécessaire dans le cas d'une modification
@@ -468,7 +486,7 @@ include '../inc/nav.inc.php';
         <form method="post" action="">
 
             <div class="block-nom">
-                <input type="text" name="nom" id="nom" placeholder="Nom" list="list-produit" value="<?= $nom ?>">
+                <input type="text" name="nom" id="nom" placeholder="Nom" list="list-produit" <?= (isset($_GET['action']) && $_GET['action'] == 'modification')?'readonly':'' ?> value="<?= $nom ?>">
                 <datalist id="list-produit">
 <?php
                     foreach($tab_datalist AS $produit){
