@@ -9,7 +9,16 @@ if(!user_is_connect()){
     header('location:http://ark-market/index.php');
 }
 
+// Taille des champs (prends en compte le contrôle php et le maxlength)
+$taille_description = 500;
+$taille_monnaie = 20;
+$taille_prix = 10;
+$taille_caracteristique = 7;
+$taille_niveau = 3;
+$taille_armure = 4;
+$taille_degat = 4;
 
+// Déclaration des variables
 $tab_datalist = ''; 
 $type_produit = ''; // Permettra d'afficher les différents champs du formulaire en fonction du type d'objet créé
 
@@ -174,19 +183,33 @@ if(isset($_GET['action']) && ($_GET['action'] == 'creation' || $_GET['action'] =
         // Contrôle des variables d'entrées
         /* ***************************** */
 
-        // Contrôle que le nom soit bien dans un des tableaux (cf init.inc.php)
+        // CONTRÔLE NOM : Doit être dans un des tableaux (cf init.inc.php)
         $i = '';
         $tab = 'tab_'.$_GET['type'];
-
+                
         foreach($$tab AS $indice => $valeur){
             if(array_search($nom, $$tab[$indice]) !== false)
                 $i++;   
         }
+
+        // Plateforme n'est pas transmis via l'URL mais doit être parcouru
+        foreach($tab_plateforme AS $indice => $valeur){
+            if(array_search($nom, $tab_plateforme[$indice]) !== false)
+                $i++;   
+        }
+
         if($i == 0)
-            $msg .= '<p class="alerte-msg"> Veuillez choisir une créature dans la liste fournie </p>';
+            $msg .= '<p class="alerte-msg"> Veuillez choisir un nom dans la liste fournie </p>';
 
-        //  Contrôle nombre de caractères et type de caractères de la description
+        // CONTRÔLE DESCRIPTION : Limite du nombre de caractères
+        if(iconv_strlen($description) > $taille_description){
+            $msg .= "<p class=\"alerte-msg\"> La monnaie ne peut pas dépasser $taille_description caractères </p>";
+        }
 
+        // CONTRÔLE MONNAIE : Limite nombre de caractères
+        if(iconv_strlen($monnaie) > $taille_monnaie){
+            $msg .= "<p class=\"alerte-msg\"> La monnaie ne peut pas dépasser $taille_monnaie caractères </p>";
+        }
 
 
         // Traitement des données propre aux créatures
@@ -197,17 +220,7 @@ if(isset($_GET['action']) && ($_GET['action'] == 'creation' || $_GET['action'] =
                                         && isset($_POST['poids'])
                                         && isset($_POST['attaque'])
                                         && isset($_POST['vitesse'])
-                                        && isset($_POST['niveau'])
-                                        && isset($_POST['sexe'])){
-
-
-            // Si absence de prix définie par l'utilisateur
-            if(empty($_POST['prix1'])){
-                $prix1 = 'A négocier';
-                $monnaie = '';
-            }else
-                $prix1 = trim($_POST['prix1']);
-                                            
+                                        && isset($_POST['niveau'])){                                           
 
             $categorie = rechercheCategorie($tab_creature, $nom);
             $vie = trim($_POST['vie']);
@@ -218,18 +231,75 @@ if(isset($_GET['action']) && ($_GET['action'] == 'creation' || $_GET['action'] =
             $attaque = trim($_POST['attaque']);
             $vitesse = trim($_POST['vitesse']);
             $niveau = trim($_POST['niveau']);
-            $sexe = $_POST['sexe'];
 
-            // Préparation format pour stockage dans la BDD
-            foreach($_POST['sexe'] AS $valeur){
-                $sexeBDD .= $valeur . ' ';
-            }
-            $sexeBDD = trim($sexeBDD);
+            // Si absence de prix définie par l'utilisateur
+            if(empty($_POST['prix1'])){
+                $prix1 = 'A négocier';
+                $monnaie = '';
+            }else
+                $prix1 = trim($_POST['prix1']);
 
-            /* 
-            CONTROLE DES VARIABLES D'ENTREES
-            ...
-            */
+
+            /* ***************************** */
+            // Contrôle des variables d'entrées
+            /* ***************************** */
+
+            // CONTRÔLE PRIX1 : Limite nombre de caractères et numerique sauf si champs vide ("à négocier")
+            if(iconv_strlen($prix1) > $taille_prix)
+                $msg .= "<p class=\"alerte-msg\"> La prix ne peut pas dépasser $taille_prix chiffres</p>";
+
+            if(!empty($_POST['prix1']) && !is_numeric($prix1))
+                $msg .= "<p class=\"alerte-msg\"> Le prix doit être numérique </p>";
+
+            // CONTRÔLE CARACTERISTIQUE : Limite nombre de caractères et si numériques
+/*             if(empty($_POST['vie']) || empty($_POST['energie'])      // Si ne peut être vide
+                                    || empty($_POST['oxygene'])
+                                    || empty($_POST['nourriture'])
+                                    || empty($_POST['poids'])
+                                    || empty($_POST['attaque'])
+                                    || empty($_POST['vitesse']))
+                $msg .= "<p class=\"alerte-msg\"> Merci de préciser toutes les caractéristiques de la créature </p>";
+            else */if((!empty($vie) && !is_numeric($vie)) || (!empty($vie) && !is_numeric($energie))
+                                                          || (!empty($oxygene) && !is_numeric($oxygene))
+                                                          || (!empty($nourriture) && !is_numeric($nourriture))
+                                                          || (!empty($poids) && !is_numeric($poids))
+                                                          || (!empty($attaque) && !is_numeric($attaque))
+                                                          || (!empty($vitesse) && !is_numeric($vitesse)))
+                $msg .= "<p class=\"alerte-msg\"> Les caractéristiques doivent être numériques </p>";
+    
+            if(iconv_strlen($vie) > $taille_caracteristique || iconv_strlen($energie) > $taille_caracteristique
+                                                            || iconv_strlen($oxygene) > $taille_caracteristique
+                                                            || iconv_strlen($nourriture) > $taille_caracteristique
+                                                            || iconv_strlen($poids) > $taille_caracteristique
+                                                            || iconv_strlen($attaque) > $taille_caracteristique
+                                                            || iconv_strlen($vitesse) > $taille_caracteristique)
+                $msg .= "<p class=\"alerte-msg\"> Les caractéristiques ne peuvent pas dépasser $taille_caracteristique chiffres</p>";
+
+            // CONTRÔLE NIVEAU : Obligatoire, limite de nombre de caractères, numérique
+            if(empty($niveau))
+                $msg .= "<p class=\"alerte-msg\"> Le niveau est obligatoire </p>";
+            elseif(!is_numeric($niveau))
+                $msg .= "<p class=\"alerte-msg\"> Le niveau doit être numérique </p>";
+            elseif(iconv_strlen($niveau) > $taille_niveau)
+                $msg .= "<p class=\"alerte-msg\"> Le niveau ne peut pas dépasser $taille_niveau chiffres</p>";
+
+            // CONTRÔLE SEXE : Obligatoire et contrôle si les données réçus correspondent aux 3 valeurs possible
+            if(!empty($_POST['sexe'])){
+
+                $sexe = $_POST['sexe'];
+
+                if(rechercheTab($sexe, $tab_sexe)) // $tab_sexe se trouve dans init.inc.php
+                        $msg .= "<p class=\"alerte-msg\"> Sélectionner un des sexes proposés initialement </p>";
+
+                // Préparation format pour stockage dans la BDD
+                foreach($_POST['sexe'] AS $valeur){
+                    $sexeBDD .= $valeur . ' ';
+                }
+                $sexeBDD = trim($sexeBDD);
+
+            }else
+                $msg .= "<p class=\"alerte-msg\"> Veuillez préciser le sexe </p>";
+
 
             if(empty($msg)){
 
@@ -262,18 +332,9 @@ if(isset($_GET['action']) && ($_GET['action'] == 'creation' || $_GET['action'] =
         // Traitement des données des selles, armes et armures
         }elseif(($_GET['type'] == 'selle' || $_GET['type'] == 'arme' || $_GET['type'] == 'armure') 
                                           && isset($_POST['prix2'])
-                                          && isset($_POST['qualite'])
-                                          && isset($_POST['type'])){
+                                          && isset($_POST['qualite'])){
 
             $qualite = trim($_POST['qualite']);
-            $type = $_POST['type'];
-
-            // Préparation format pour stockage dans la BDD
-            if(!empty($type[1]))
-                $typeBDD = 'deux';
-            else
-                $typeBDD = $type[0];
-
 
             // Prise en compte de tous les combinaisons concernant les 2 prix possible (objet et plan)
             if($typeBDD == 'deux'){
@@ -308,23 +369,67 @@ if(isset($_GET['action']) && ($_GET['action'] == 'creation' || $_GET['action'] =
             }
 
 
+            /* ***************************** */
+            // Contrôle des variables d'entrées
+            /* ***************************** */
+
+            // CONTRÔLE PRIX1 et PRIX2 : Limite nombre de caractères et numérique sauf si champs vide ("à négocier")
+            if(iconv_strlen($prix1) > $taille_prix || iconv_strlen($prix2) > $taille_prix){
+                if($typeBDD == "deux" && !empty($_POST['prix1']) && !empty($_POST['prix2']))
+                    $msg .= "<p class=\"alerte-msg\"> Les prix ne peuvent dépasser $taille_prix chiffres</p>";
+                else
+                    $msg .= "<p class=\"alerte-msg\"> Le prix ne peut dépasser $taille_prix chiffres</p>";
+            }
+
+            if((!empty($_POST['prix1']) && !is_numeric($prix1)) || (!empty($_POST['prix2']) && !is_numeric($prix2)))
+                $msg .= "<p class=\"alerte-msg\"> Le prix doit être numérique </p>";
+
+            // CONTRÔLE QUALITE : Conforme à l'enum de la BDD
+            if(array_search($qualite, $tab_qualite) === false)
+                $msg .= "<p class=\"alerte-msg\"> Sélectionner une des qualités proposées initialement </p>";
+
+            // CONTRÔLE TYPE : Obligatoire et conforme aux 2 valeurs possible
+            if(!empty($_POST['type'])){
+
+                $type = $_POST['type'];
+
+                if(rechercheTab($type, $tab_type)) // $tab_type se trouve dans init.inc.php
+                    $msg .= "<p class=\"alerte-msg\"> Sélectionner un des choix proposés initialement </p>";
+
+
+                // Préparation format pour stockage dans la BDD
+                if(!empty($type[1]))
+                    $typeBDD = 'deux';
+                else
+                    $typeBDD = $type[0];
+            }else
+                $msg .= "<p class=\"alerte-msg\"> Veuillez préciser le type d'objet </p>";
+
+
             // Traitement des données propre aux selles
             if($_GET['type'] == 'selle' && isset($_POST['armure'])
-                                        && isset($_POST['taille'])
-                                        && ($_POST['taille'] == 'selle' || $_POST['taille'] == 'plateforme')){
+                                        && isset($_POST['taille'])){
                                          
                 // Permettra de gérer l'affichage de l'input type radio concernant la taille. Cas possible : Créatures peuvant porter selle et plateforme (affichage pour choix de l'utilsiateur), pas de plateforme (non affichage), uniquement plateforme (non affichage mais checked sur input correspondant)
-                $produit_plateforme_seule = strpos($plateforme_seule, $_POST['nom']); // cf init.inc.php pour varialbe plateforme_seul. String regroupant les créatures ne pouvant porter que des plateforme
-                $produit_plateforme = strpos($plateforme, $_POST['nom']); // cf init.inc.php pour varialbe plateforme. String regroupant les créatures portant  que des plateforme
+                $produit_plateforme_seule = strpos($plateforme_seule, $_POST['nom']); // cf init.inc.php pour varialbe plateforme_seul. String regroupant les créatures ne pouvant porter que des plateformes
+                $produit_plateforme = strpos($plateforme, $_POST['nom']); // cf init.inc.php pour varialbe plateforme. String regroupant les créatures pouvant porté des plateformes
 
                 $categorie = rechercheCategorie($tab_selle, $nom);
                 $armure = trim($_POST['armure']);
                 $taille = trim($_POST['taille']);
 
-                /* 
-                CONTROLE DES VARIABLES D'ENTREES
-                ...
-                */
+
+                /* ***************************** */
+                // Contrôle des variables d'entrées
+                /* ***************************** */
+
+                // CONTRÔLE ARMURE : Obligatoire, limite de nombre de caractères et numérique
+                analyse($armure, $taille_armure, 'd\'armure');
+
+                // CONTRÔLE TAILLE : Conforme à l'enum de la BDD
+                if($taille != 'selle' && $taille != 'plateforme')
+                    $msg .= "<p class=\"alerte-msg\"> Sélectionner un des équipements proposés initialement </p>";                
+
 
                 if(empty($msg)){
 
@@ -356,10 +461,14 @@ if(isset($_GET['action']) && ($_GET['action'] == 'creation' || $_GET['action'] =
                 $categorie = rechercheCategorie($tab_arme, $nom);
                 $degat = trim($_POST['degat']);
 
-                /* 
-                CONTROLE DES VARIABLES D'ENTREES
-                ...
-                */
+
+                /* ***************************** */
+                // Contrôle des variables d'entrées
+                /* ***************************** */
+
+                // CONTRÔLE DÉGÂT : Obligatoire, limite de nombre de caractères et numérique
+                analyse($degat, $taille_degat, 'des dégâts');
+
 
                 if(empty($msg)){
 
@@ -396,10 +505,23 @@ if(isset($_GET['action']) && ($_GET['action'] == 'creation' || $_GET['action'] =
                 $chaleur = trim($_POST['chaleur']);
                 $durabilite = trim($_POST['durabilite']);
 
-                /* 
-                CONTROLE DES VARIABLES D'ENTREES
-                ...
-                */
+
+                /* ***************************** */
+                // Contrôle des variables d'entrées
+                /* ***************************** */
+
+                // CONTRÔLE ARMURE : Obligatoire, limite de nombre de caractères et numérique
+                analyse($armure, $taille_armure, 'd\'armure');
+
+                // CONTRÔLE RÉSISTANCE FROID : Obligatoire, limite de nombre de caractères et numérique
+                analyse($froid, $taille_armure, 'de résistance au froid');
+
+                // CONTRÔLE RÉSISTANCE CHALEUR : Obligatoire, limite de nombre de caractères et numérique
+                analyse($chaleur, $taille_armure, 'de résistance à la chaleur');
+        
+                // CONTRÔLE DURABILITÉ : Obligatoire, limite de nombre de caractères et numérique
+                analyse($durabilite, $taille_armure, 'de durabilité');
+
 
                 if(empty($msg)){
 
@@ -427,12 +549,14 @@ if(isset($_GET['action']) && ($_GET['action'] == 'creation' || $_GET['action'] =
                 }
             }
         }
-/*         $creation->execute();
 
-        if($creation)
-            header('location:http://ark-market/gestion/gestion.php?notif=creaModifTrue');
-        else
-            header('location:http://ark-market/gestion/gestion.php?notif=creaModifFalse'); */
+        if(empty($msg)){
+/*             $creation->execute();
+            if($creation)
+                header('location:http://ark-market/gestion/gestion.php?notif=creaModifTrue');
+            else
+                header('location:http://ark-market/gestion/gestion.php?notif=creaModifFalse'); */
+        }
     }
 }
 
@@ -529,31 +653,31 @@ include '../inc/nav.inc.php';
                 <div class="block-caract-creature">
                     <div class="ss-caract">
                         <img src="<?= URL ?>image/site/caracteristique/temporaire.png" alt="">
-                        <input type="text" name="vie" placeholder="Vie" value="<?= $vie ?>">
+                        <input type="text" name="vie" placeholder="Vie" maxlength="<?= $taille_caracteristique ?>" value="<?= $vie ?>">
                     </div>
                     <div class="ss-caract">
                         <img src="<?= URL ?>image/site/caracteristique/temporaire.png" alt="">
-                        <input type="text" name="energie" placeholder="Énergie" value="<?= $energie ?>">
+                        <input type="text" name="energie" placeholder="Énergie" maxlength="<?= $taille_caracteristique ?>" value="<?= $energie ?>">
                     </div>
                     <div class="ss-caract">
                         <img src="<?= URL ?>image/site/caracteristique/temporaire.png" alt="">
-                        <input type="text" name="oxygene" placeholder="Oxygène" value="<?= $oxygene ?>">
+                        <input type="text" name="oxygene" placeholder="Oxygène" maxlength="<?= $taille_caracteristique ?>" value="<?= $oxygene ?>">
                     </div>
                     <div class="ss-caract">
                         <img src="<?= URL ?>image/site/caracteristique/temporaire.png" alt="">
-                        <input type="text" name="nourriture" placeholder="Nourriture" value="<?= $nourriture ?>">
+                        <input type="text" name="nourriture" placeholder="Nourriture" maxlength="<?= $taille_caracteristique ?>" value="<?= $nourriture ?>">
                     </div>
                     <div class="ss-caract">
                         <img src="<?= URL ?>image/site/caracteristique/temporaire.png" alt="">
-                        <input type="text" name="poids" placeholder="Poids" value="<?= $poids ?>">
+                        <input type="text" name="poids" placeholder="Poids" maxlength="<?= $taille_caracteristique ?>" value="<?= $poids ?>">
                     </div>
                     <div class="ss-caract">
                         <img src="<?= URL ?>image/site/caracteristique/temporaire.png" alt="">
-                        <input type="text" name="attaque" placeholder="Attaque" value="<?= $attaque ?>">
+                        <input type="text" name="attaque" placeholder="Attaque" maxlength="<?= $taille_caracteristique ?>" value="<?= $attaque ?>">
                     </div>
                     <div class="ss-caract">
                         <img src="<?= URL ?>image/site/caracteristique/temporaire.png" alt="">
-                        <input type="text" name="vitesse" placeholder="Vitesse" value="<?= $vitesse ?>">
+                        <input type="text" name="vitesse" placeholder="Vitesse" maxlength="<?= $taille_caracteristique ?>" value="<?= $vitesse ?>">
                     </div>
                 </div>
 <?php
@@ -569,12 +693,13 @@ include '../inc/nav.inc.php';
                     <div class="qualite">
                         <label for="qualite">Qualité :</label>
                         <select name="qualite" id="qualite">
-                            <option value="Commun" <?= ($qualite == 'commun')?"checked":'' ?>>Commun</option>
-                            <option value="Inhabituel" <?= ($qualite == 'Inhabituel')?"checked":'' ?>>Inhabituel</option>
-                            <option value="Rare" <?= ($qualite == 'Rare')?"checked":'' ?>>Rare</option>
-                            <option value="Épique" <?= ($qualite == 'Épique')?"checked":'' ?>>Épique</option>
-                            <option value="Légendaire" <?= ($qualite == 'Légendaire')?"checked":'' ?>>Légendaire</option>
-                            <option value="Mythique" <?= ($qualite == 'Mythique')?"checked":'' ?>>Mythique</option>
+<?php
+                            foreach($tab_qualite AS $valeur){ //$tab_qualite se trouve dans init.inc.php
+?>
+                                <option value="<?= $valeur ?>" <?= ((isset($_POST['qualite']) && $_POST['qualite'] == $valeur) || (!isset($_POST['qualite']) && $qualite == $valeur))?"selected":'' ?>><?= $valeur ?></option>
+<?php
+                            }
+?>
                         </select>
                     </div>
 
@@ -583,7 +708,7 @@ include '../inc/nav.inc.php';
 ?>
                         <div class="armure">
                             <label for="armure">Armure :</label>
-                            <input type="text" id="armure" name="armure" placeholder="Armure" value="<?= $armure ?>">
+                            <input type="text" id="armure" name="armure" placeholder="Armure" maxlength="<?= $taille_armure ?>" value="<?= $armure ?>">
                         </div>
 
 <?php                   // Bloc résistance chaleur, froid et durabilité pour les armures
@@ -592,15 +717,15 @@ include '../inc/nav.inc.php';
                             <div class="block-res">
                                 <div class="res-froid">
                                     <label for="froid">Résistance au froid :</label>
-                                    <input type="text" id="froid" name="froid" placeholder="Résistance au froid" value="<?= $froid ?>">
+                                    <input type="text" id="froid" name="froid" placeholder="Résistance au froid" maxlength="<?= $taille_armure ?>" value="<?= $froid ?>">
                                 </div>
                                 <div class="res-chaleur">
                                     <label for="chaleur">Résistance à la chaleur :</label>
-                                    <input type="text" id="chaleur" name="chaleur" placeholder="Résistance à la chaleur" value="<?= $chaleur ?>">
+                                    <input type="text" id="chaleur" name="chaleur" placeholder="Résistance à la chaleur" maxlength="<?= $taille_armure ?>" value="<?= $chaleur ?>">
                                 </div>
                                 <div class="durabilite">
                                     <label for="durabilite">Durabilité :</label>
-                                    <input type="text" id="durabilite" name="durabilite" placeholder="Durabilite" value="<?= $durabilite ?>">
+                                    <input type="text" id="durabilite" name="durabilite" placeholder="Durabilite" maxlength="<?= $taille_armure ?>" value="<?= $durabilite ?>">
                                 </div>
                             </div>
 <?php
@@ -613,7 +738,7 @@ include '../inc/nav.inc.php';
 ?>
                     <div class="degat">
                         <label for="degat">Dégâts :</label>
-                        <input type="text" id="degat" name="degat" placeholder="Dégâts" value="<?= $degat ?>">
+                        <input type="text" id="degat" name="degat" placeholder="Dégâts" maxlength="<?= $taille_degat ?>" value="<?= $degat ?>">
                     </div>
 <?php
                     }
@@ -633,13 +758,17 @@ include '../inc/nav.inc.php';
                 <div class="block-precision">
                     <div class="niveau">
                         <label for="niveau">Niveau</label>
-                        <input type="text" id="niveau" name="niveau" placeholder="Niveau" value="<?= $niveau ?>">
+                        <input type="text" id="niveau" name="niveau" placeholder="Niveau" maxlength="<?= $taille_niveau ?>" value="<?= $niveau ?>">
                     </div>
                     <div class="sexe">
                         <label>Sexe</label>
-                        <input type="checkbox" name="sexe[]" <?= (isset($sexe[0]) && array_search('mâle', $sexe) !== false )?'checked':'' ?> value="mâle"> Mâle
-                        <input type="checkbox" name="sexe[]" <?= (isset($sexe[0]) && array_search('femelle', $sexe) !== false )?'checked':'' ?> value="femelle"> Femelle
-                        <input type="checkbox" name="sexe[]" <?= (isset($sexe[0]) && array_search('castré', $sexe) !== false )?'checked':'' ?> value="castré"> Castré
+<?php
+                        foreach($tab_sexe AS $valeur){
+?>
+                            <input type="checkbox" name="sexe[]" <?= (isset($sexe[0]) && array_search($valeur, $sexe) !== false )?'checked':'' ?> value="<?= $valeur ?>"> <?= $valeur ?>
+<?php
+                        }
+?>
                     </div>
                 </div>
 <?php
@@ -647,27 +776,27 @@ include '../inc/nav.inc.php';
 ?>
             <div class="description">
                 <label for="description">Description</label>
-                <textarea name="description" id="description"><?= $description ?></textarea>
+                <textarea name="description" id="description" maxlength="<?= $taille_description ?>"> <?= $description ?></textarea>
             </div>
 
             <div class="block-prix">
                 <div class="prix1" style="<?= ($typeBDD == 'plan')?'display: none':'' ?>">
                     <label for="prix1">Prix de <?= ($type_produit == 'creature')?'la créature':'l\'objet' ?></label>
-                    <input type="text" id="prix1" name="prix1" value="<?= (is_numeric($prix1))?$prix1:'' ?>">
+                    <input type="text" id="prix1" name="prix1" maxlength="<?= $taille_prix ?>" value="<?= (is_numeric($prix1))?$prix1:'' ?>">
                 </div>
 <?php
                 if($type_produit != 'creature'){
 ?>
-                    <div class="prix2" style="<?= ($typeBDD == 'deux' || $typeBDD == 'plan')?'':'display: none' ?>;">
+                    <div class="prix2" style="<?= ($typeBDD == 'deux' || $typeBDD == 'plan')?'':'display: none;' ?>">
                         <label for="prix2">Prix du plan</label>
-                        <input type="text" id="prix2" name="prix2" value="<?= (is_numeric($prix2))?$prix2:'' ?>">
+                        <input type="text" id="prix2" name="prix2" maxlength="<?= $taille_prix ?>" value="<?= (is_numeric($prix2))?$prix2:'' ?>">
                     </div>
 <?php
                 }
 ?>
                 <div class="monnaie">
                     <label for="monnaie">Monnaie</label>
-                    <input type="text" id="monnaie" name="monnaie" value="<?php if(!empty($monnaie)) echo $monnaie; elseif(!empty($_SESSION['serveur']['monnaie'])) echo $_SESSION['serveur']['monnaie']; ?>">
+                    <input type="text" id="monnaie" name="monnaie" maxlength="<?= $taille_monnaie ?>" value="<?php if(!empty($monnaie)) echo $monnaie; elseif(!empty($_SESSION['serveur']['monnaie'])) echo $_SESSION['serveur']['monnaie']; ?>">
                 </div>
 
             </div>

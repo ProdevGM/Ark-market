@@ -19,14 +19,41 @@ function user_is_connect() {
 
 
 
-// fonction recherche catégorie en fonction de la créature sélectionnée
+// Fonction recherche catégorie en fonction de la créature sélectionnée
 function rechercheCategorie($tabSelect, $nomSelect){
 
-		foreach($tabSelect AS $indice => $valeur){
-			if(array_search($nomSelect, $tabSelect[$indice]) !== false){
-				return $indice;
-			}
+	foreach($tabSelect AS $indice => $valeur){
+		if(array_search($nomSelect, $tabSelect[$indice]) !== false){
+			return $indice;
 		}
+	}
+}
+
+
+// Fonction qui recherche la présence de valeur d'un tableau dans un autre tableau
+function rechercheTab($tab1, $tab2){
+
+	for($i=0; $i<count($tab1); $i++){
+		if(array_search($tab1[$i], $tab2) === false){
+			return true;
+		}                   
+	}
+}
+
+
+// Fonction contrôlant la présence, le nombre de caractère et le caractère numérique d'une variable
+function analyse($variable, $taille, $message){
+
+	global $msg;
+	
+	if(empty($variable))
+		$msg .= "<p class=\"alerte-msg\"> Le niveau $message est obligatoire </p>";
+	elseif(!is_numeric($variable))
+		$msg .= "<p class=\"alerte-msg\"> Le niveau $message doit être numérique </p>";
+	elseif(iconv_strlen($variable) > $taille)
+		$msg .= "<p class=\"alerte-msg\"> Le niveau $message ne peut dépasser $taille chiffres</p>";
+}
+
 
 /* 	switch($tabSelect){
 		case 'tabCreature' :
@@ -54,7 +81,7 @@ function rechercheCategorie($tabSelect, $nomSelect){
 		return 'volant';
 	elseif(array_search($nomSelect, $tab_creature['aquatique']) !== false)
 		return 'aquatique';	 */			
-}
+
 
 
 

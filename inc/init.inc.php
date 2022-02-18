@@ -12,6 +12,7 @@ $options = array(
 				);				
 $pdo = new PDO($host_db, $login, $password, $options);
 
+
 // Création d'une variable destinée à afficher des messages utilisateur
 $msg = "";
 
@@ -29,11 +30,23 @@ define('SERVER_ROOT', $_SERVER['DOCUMENT_ROOT']);
 define('SITE_ROOT', '/ark-market/');
 
 
-// Tableau recenssant toutes les créatures, selles, armes, armures et catégorie
+
+
+// Tableau qualité des produits (sauf créatures)
+$tab_qualite = ['Commun', 'Inhabituel', 'Rare', 'Épique', 'Légendaire', 'Mythique'];
+
+// Tableau sexe des créatures
+$tab_sexe = ['mâle', 'femelle', 'castré'];
+
+// Tableau type des produits (sauf créatures)
+$tab_type = ['objet', 'plan'];
+
+// Tableau recenssant toutes les catégories en fonction de la nature du produit
 $tab_categorie_creature_selle = ['terrestre', 'volant', 'aquatique'];
 $tab_categorie_arme = ['outil', 'mélé', 'bouclier', 'jet', 'feu', 'accessoire', 'explosif', 'piège', 'tourelle', 'tek'];
 $tab_categorie_armure = ['tissu', 'cuir', 'fourrure', 'desert', 'camouflage', 'chitine', 'métal', 'radiation', 'plongé', 'emeute', 'tek'];
 
+// Tableau recenssant toutes les créatures, selles, armes, armures et catégorie
 $tab_creature = [
 	'terrestre' => ['Achatina', 'Allosaure', 'Amargasaurus', 'Andrewsarchus', 'Ankylosaure', 'Aranéo', 'Arthropleura', 'Baryonyx', 'Basilic', 'Beelzebufo', 'Bloodstalker', 'Bousier', 'Brontosaure', 'Bulbdog', 'Carbonemys', 'Carnotaure', 'Castoroides', 'Chalicotherium', 'Compy', 'Daeodon', 'Deinonychus', 'Dilophosaure', 'Dimétrodon', 'Dimorphodon', 'Dinopithèque', 'Diplocaulus', 'Diplodocus', 'Dodo', 'Doedicurus', 'Dragon Rocheux', 'Equus', 'Exécuteur', 'Exo-Mek', 'Faucheur', 'Ferox', 'Gacha', 'Gallimimus', 'Gecko luisant', 'Giganotosaure', 'Gigantopithèque', 'Golem de pierre', 'Hesperornis', 'Hyène', 'Iguanodon', 'Jerboa', 'Kairuku', 'Kaprosuchus', 'Karkinos', 'Kentrosaure', 'Lézard épineux', 'Loup Sinistre', 'Loutre', 'Lumicorne', 'Lystrosaure', 'Magmasaure', 'Mammouth', 'Mantis', 'Megalania', 'Mégalocéros', 'Mégalosaure', 'Mégathérium', 'Mek', 'Mésopithèque', 'Microraptor', 'Morellatops', 'Moschops', 'Noglin', 'Ours Sinistre', 'Oviraptor', 'Ovis', 'Pachycéphalosaure', 'Pachyrhinosaure', 'Paraceratherium', 'Parasaure', 'Pegomastax', 'Phiomia', 'Plumineux', 'Procoptodon', 'Pulmonoscorpius', 'Purlovia', 'Raptor', 'Rat des profondeurs', 'Ravageur', 'Rhinocéros laineux', 'Sangsue', 'Sarcosuchus', 'Shadowmane', 'Smilodon', 'Spinosaure', 'Stégosaure', 'Stryder Tek', 'T-Rex', 'Thérizinosaure', 'Thylacoleo', 'Titan de Glace', 'Titan des Forêts', 'Titan du Désert', 'Titanoboa', 'Titanosaure', 'Tricératops', 'Trilobite', 'Troodon', 'Vélonasaure', 'Yutyrannus'],
 	'volant' => ['Abeille géante', 'Archaeopteryx', 'Astrocetus', 'Argentavis', 'Astrodelphis', 'Éclaireur', 'Griffon', 'Harfang des neiges', 'Ichthyornis', 'Lymantria', 'Maewing', 'Managarm', 'Oiseau-Terreur', 'Onyc', 'Pelagornis', 'Phénix', 'Ptéranodon', 'Quetzal', 'Sacagaz', 'Sinomacrops', 'Tapejara', 'Tropéognathus', 'Vautour', 'Voidwyrm', 'Wyverne', 'Wyverne de Cristal', 'Wyverne de Glace'],

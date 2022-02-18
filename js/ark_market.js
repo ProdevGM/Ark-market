@@ -3,10 +3,12 @@
 // Toogle sur les checkbox plan et objet afin de toogle l'input prix1 et prix2
 $('#objet').change(function(){
     $('.prix1').toggle();
+    $('#prix1').val('');
 });
 
 $('#plan').change(function(){
     $('.prix2').toggle();
+    $('#prix2').val('');
 });
 
 
@@ -28,4 +30,6 @@ $('#nom').change(function(){
         $('.selle').attr('checked', true);
     }
 });
+
+
 
