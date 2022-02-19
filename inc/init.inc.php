@@ -29,7 +29,11 @@ define('SERVER_ROOT', $_SERVER['DOCUMENT_ROOT']);
 // Chemin racine du dossier du site depuis le serveur
 define('SITE_ROOT', '/ark-market/');
 
-
+?>
+<script>
+	var info_type_js;
+</script>
+<?php
 
 
 // Tableau qualité des produits (sauf créatures)
@@ -53,6 +57,11 @@ $tab_creature = [
 	'aquatique' => ['Basilosaure', 'Baudroie abyssale', 'Coelacanthe', 'Dunkleosteus', 'Electrophorus', 'Ichthyosaure', 'Lamproie', 'Leedsichthys', 'Liopleurodon', 'Manta', 'Mégachelon', 'Mégalodon', 'Mosasaure', 'Piranha', 'Plésiosaure', 'Saumon', 'Tusoteuthis']
 ];
 
+$creature_js = '';
+foreach($tab_creature AS $indice => $valeur){
+	$creature_js .= ' '.implode(" ", $tab_creature[$indice]);
+}
+
 $tab_selle = [
 	'terrestre' => ['Allosaure', 'Amargasaurus', 'Ankylosaure', 'Aranéo', 'Arthropleura', 'Baryonyx', 'Basilic', 'Beelzebufo', 'Brontosaure', 'Carbonemys', 'Carnotaure', 'Castoroides', 'Chalicotherium', 'Daeodon', 'Deinonychus', 'Diplodocus', 'Doedicurus', 'Dragon Rocheux', 'Equus', 'Gacha', 'Gallimimus', 'Giganotosaure', 'Golem_de_pierre', 'Hyène', 'Iguanodon', 'Kaprosuchus', 'Karkinos', 'Lézard épineux', 'Magmasaure', 'Mammouth', 'Mantis', 'Megalania', 'Mégalocéros', 'Mégalosaure', 'Mégathérium', 'Morellatops', 'Ours sinistre', 'Pachycéphalosaure', 'Pachyrhinosaure', 'Paraceratherium', 'Parasaure', 'Phiomia', 'Brontosaure', 'Paraceratherium', 'Procoptodon', 'Pulmonoscorpius', 'Raptor', 'Rat des profondeurs', 'Ravageur', 'Rhinocéros laineux', 'Sarcosuchus', 'Smilodon', 'Spinosaure', 'Stégosaure', 'Thérizinosaure', 'Thylacoleo', 'T-rex', 'Tricératops', 'Vélonasaure', 'Yutyrannus'],
 	'volant' => ['Argentavis', 'Astrocetus', 'Astrodelphis', 'Harfang des neiges', 'Lymantria', 'Maewing', 'Managarm', 'Oiseau-terreur', 'Pelagornis', 'Ptéranodon', 'Quetzal', 'Sacagaz', 'Tapejara', 'Tropéognathus'],
@@ -65,33 +74,27 @@ $tab_plateforme = [
 	'aquatique' => ['Mégachelon', 'Plésiosaure', 'Mosasaure',]
 ];
 
-
 // Diff entre $tab_selle et $tab_plateforme afin de savoir quelle créature ne peut être équipée que d'une plateforme
 // Stockage dans un string afin d'être lu par la suite en js
 $plateforme_seule = '';
 $plateforme = '';
 
-foreach($tab_selle AS $indice => $valeur){
 
+foreach($tab_selle AS $indice => $valeur){
 	$plateforme_seule .= ' '.implode(" ", array_diff($tab_plateforme[$indice], $tab_selle[$indice]));
 }
 
 foreach($tab_plateforme AS $indice => $valeur){
-
 	$plateforme .= ' '.implode(" ", $tab_plateforme[$indice]);
 }
 
-?>
-<!-- Tranformation de $tab_plateforme et $tab_plateforme_seule en string js -->
-<script>
-	var plateformeSeule = "<?= $plateforme_seule ?>";
-	var plateforme = "<?= $plateforme ?>";
-	console.log(plateformeSeule);
-	console.log(plateforme);
-</script>
+$selle_js = '';
+foreach($tab_selle AS $indice => $valeur){
+	$selle_js .= ' '.implode(" ", $tab_selle[$indice]);
+}
+$selle_js .= $plateforme_seule; // Ajout des plateforme seule
 
 
-<?php
 $tab_arme = [
 	'outil' => ['Pioche en pierre', 'Hache en pierre', 'Torche', 'Bâton lumineux', 'Pioche en métal', 'Hache en métal', 'Faucille', 'Piolet', 'Outil de taxidermie', 'Pinces', 'Lasso', 'Tronçonneuse', 'Foreuse'],
 	'mélé' => ['Lance en bois', 'Lance en métal', 'Massue', 'Épée', 'Matraque électrique', 'Lance de joute', 'Épée Tek', 'Éventreuses Tek'],
@@ -104,6 +107,11 @@ $tab_arme = [
 	'tourelle' => ['Tourelle automatique', 'Tourelle automatique lourde', 'Tourelle Baliste', 'Tourelle Catapulte', 'Tourelle Minigun', 'Tourelle Lance-Roquettes', 'Canon', 'Tourelle Tek'],
 	'tek' => ['Fusil Tek', 'Grenade Tek', 'Tourelle Tek', 'Épée Tek', 'Bouclier Tek', 'Sniper Tek', 'Grenade de Gravité Tek', 'Missile de croisière', 'Éventreuses Tek', 'Lance-grenade Tek', 'Canon d\'épaule Tek', 'Pistolet Tek', 'Arc Tek']
 ];
+
+$arme_js = '';
+foreach($tab_arme AS $indice => $valeur){
+	$arme_js .= ' '.implode(" ", $tab_arme[$indice]);
+}
 
 $tab_armure = [
 	'tissu' => ['Foulard en tissu', 'Chemise en tissu', 'Gants en tissu', 'Pantalon en tissu', 'Chaussures en tissu'],
@@ -120,6 +128,22 @@ $tab_armure = [
 	'utilitaire' => ['Attache pour moteur de tyrolienne', 'Casque de mineur', 'Lunettes de vision nocturne', 'Masque à gaz', 'Planeur dorsal', 'Menottes']
 ];
 
+$armure_js = '';
+foreach($tab_armure AS $indice => $valeur){
+	$armure_js .= ' '.implode(" ", $tab_armure[$indice]);
+}
+?>
+
+<!-- Tranformation de $tab_plateforme et $tab_plateforme_seule en string js -->
+<script>
+	var plateformeSeule = "<?= $plateforme_seule ?>";
+	var plateforme = "<?= $plateforme ?>";
+
+	var creature = "<?= $creature_js ?>";
+	var selle = "<?= $selle_js ?>";
+	var arme = "<?= $arme_js ?>";
+	var armure = "<?= $armure_js ?>";
+</script>
 
 
 

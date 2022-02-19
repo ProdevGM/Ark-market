@@ -3,12 +3,8 @@
 3 / Caractéristique des créature en niveau ou non (%)
 
 A/ ajout.php
-    1/ Contrôle des variables d'entrées avant création dans BDD
     4/ Confirmer la suppression d'un produit par un modal
-    5/ Essayer de trouver un moyen de faire en sorte que l'utilisateur ne puisse pas écrire un autre nom que ceux prévu dans la datalist
     6/ Partie description, afficher le nombre de caractère restant
-    7/ Enlever les flèches des input. Indice pour firefox : style="-moz-appearance: textfield". Chercher pour les autres avigateurs principaux
-    8/ Contrôle JS des champs non encadrer par html
 
 B/ gestion.php
     1/ Pagination
@@ -31,4 +27,8 @@ Rappel :
 
 
 EN COURS :
-Contrôle des variables d'entrée pour la création ou la modification de produit : ajout.php l.180
+contrôle JS de la conformité du nom au tableau. Fonctionne avec l'armure. Reste à créer les tableau js dans init
+
+
+
+AMELIORATION :

@@ -47,11 +47,11 @@ function analyse($variable, $taille, $message){
 	global $msg;
 	
 	if(empty($variable))
-		$msg .= "<p class=\"alerte-msg\"> Le niveau $message est obligatoire </p>";
+		$msg .= "<p class=\"alerte-msg\"> $message_obligatoire </p>";
 	elseif(!is_numeric($variable))
-		$msg .= "<p class=\"alerte-msg\"> Le niveau $message doit être numérique </p>";
+		$msg .= "<p class=\"alerte-msg\"> $message_chiffre </p>";
 	elseif(iconv_strlen($variable) > $taille)
-		$msg .= "<p class=\"alerte-msg\"> Le niveau $message ne peut dépasser $taille chiffres</p>";
+		$msg .= "<p class=\"alerte-msg\"> $taille chiffres $message_limite_caractere</p>";
 }
 
 
