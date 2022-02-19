@@ -323,7 +323,8 @@ include 'inc/nav.inc.php';
 			<section class="section3">
 
 			</section>
-
+		</div>
+	<div>
 
 
 <?php 

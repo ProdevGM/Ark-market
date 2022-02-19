@@ -8,6 +8,7 @@ A/ ajout.php
 
 B/ gestion.php
     1/ Pagination
+    2/ nombre de produits par catégorie
 
 C/ produit.php
     1/ Icone signalement du produit
@@ -27,7 +28,7 @@ Rappel :
 
 
 EN COURS :
-contrôle JS de la conformité du nom au tableau. Fonctionne avec l'armure. Reste à créer les tableau js dans init
+Page compte.php Travail sur l'accordéon en court
 
 
 

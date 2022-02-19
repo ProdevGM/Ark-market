@@ -12,7 +12,7 @@ if(!user_is_connect()){
 
 // Déclaration des variables
 $showAccordeon = false; // Variable pour l'étude de l'url précédente
-
+$urlPrecedent = "";
 
 
 
@@ -22,18 +22,21 @@ $showAccordeon = false; // Variable pour l'étude de l'url précédente
 /* ***************************************************** */
 /* ***************************************************** */
 
-$urlPrecedent = parse_url($_SERVER['HTTP_REFERER']);
+if(!empty($_SERVER['HTTP_REFERER'])){
 
-if(isset($urlPrecedent) && $urlPrecedent['path'] == '/gestion/ajout.php'){
+    $urlPrecedent = parse_url($_SERVER['HTTP_REFERER']);
 
-    if(strpos($urlPrecedent['query'], 'type=creature'))
-        $showAccordeon = 'creature';
-    elseif(strpos($urlPrecedent['query'], 'type=selle'))
-        $showAccordeon = 'selle';
-    elseif(strpos($urlPrecedent['query'], 'type=arme'))
-        $showAccordeon = 'arme';
-    elseif(strpos($urlPrecedent['query'], 'type=armure'))
-        $showAccordeon = 'armure';
+    if(isset($urlPrecedent) && $urlPrecedent['path'] == '/gestion/ajout.php'){
+
+        if(strpos($urlPrecedent['query'], 'type=creature'))
+            $showAccordeon = 'creature';
+        elseif(strpos($urlPrecedent['query'], 'type=selle'))
+            $showAccordeon = 'selle';
+        elseif(strpos($urlPrecedent['query'], 'type=arme'))
+            $showAccordeon = 'arme';
+        elseif(strpos($urlPrecedent['query'], 'type=armure'))
+            $showAccordeon = 'armure';
+    }
 }
 
 
@@ -64,8 +67,6 @@ if(isset($_GET['notif'])){
         break;
     }
 }
-
-
 
 
 
