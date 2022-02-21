@@ -34,6 +34,19 @@ html{
     text-align: center;
 }
 
+/* msg d'alerte sous les champs */
+.alerte-champ{ 
+    display: none;
+}
+
+.condition-mdp-valide{
+    color: green;
+}
+
+.condition-mdp-non-valide{
+    color: red;
+    font-weight: bold;
+}
 
 /* ---------- HEADER ---------- */
 
