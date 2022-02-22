@@ -15,6 +15,8 @@ $pdo = new PDO($host_db, $login, $password, $options);
 
 // Création d'une variable destinée à afficher des messages utilisateur
 $msg = "";
+$annonce_top = "";
+$controle_variables = true;
 
 
 // ouverture d'une session
@@ -134,16 +136,7 @@ foreach($tab_armure AS $indice => $valeur){
 }
 ?>
 
-<!-- Tranformation de $tab_plateforme et $tab_plateforme_seule en string js -->
-<script>
-	var plateformeSeule = "<?= $plateforme_seule ?>";
-	var plateforme = "<?= $plateforme ?>";
 
-	var creature = "<?= $creature_js ?>";
-	var selle = "<?= $selle_js ?>";
-	var arme = "<?= $arme_js ?>";
-	var armure = "<?= $armure_js ?>";
-</script>
 
 
 

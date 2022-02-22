@@ -36,14 +36,93 @@ function controleCheckbox(msg, tab){
     }
 }
 
+// Contrôle au submit de la partie ajout.php
+function verif(){
+
+    var retour = true;
+
+    if(infoTypeJs == "creature"){
+        // Contrôle qu'un "sexe" a bien été sélectionné
+        var tabSexe = [$('input[value="mâle"]').is(':checked'), $('input[value="femelle"]').is(':checked'),
+                                                                $('input[value="castré"]').is(':checked')];
+        if(!controleCheckbox(messageSexe, tabSexe))
+            retour = false;
+
+    }else if(infoTypeJs == "selle"){   
+        // Contrôle qu'un "type" a bien été sélectionné
+        var tabType = [$('input[value="objet"]').is(':checked'), $('input[value="plan"]').is(':checked')];
+        if(!controleCheckbox(messageType, tabType))
+            retour = false;
+    }
+
+    return retour;
+}
+
+// Contrôle au submit de la partie mdp de la page compte.php
+function compteMdp(){
+
+    var retour = true;
+
+
+    
+    // Entre 8 et 20 caractères
+    if($('#mdp-nouveau').val().length < 8 || $('#mdp-nouveau').val().length > 20){
+       $('.mdp-nbr-caractere').addClass('condition-mdp-non-valide');
+       retour = false;
+    }else
+        $('.mdp-nbr-caractere').removeClass('condition-mdp-non-valide');
+
+    // Une majuscule
+    var maj = $('#mdp-nouveau').val().match(/[A-Z]/g);
+    if(!maj){
+       $('.mdp-maj').addClass('condition-mdp-non-valide');
+       retour = false;
+    }else
+       $('.mdp-maj').removeClass('condition-mdp-non-valide');
+       
+    // Une minuscule
+    var min = $('#mdp-nouveau').val().match(/[a-z]/g);
+    if(!min){
+       $('.mdp-min').addClass('condition-mdp-non-valide');
+       retour = false;
+    }else
+       $('.mdp-min').removeClass('condition-mdp-non-valide');
+
+    // Un chiffre
+    var chiffre = $('#mdp-nouveau').val().match(/[0-9]/g);
+    if(!chiffre){
+       $('.mdp-chiffre').addClass('condition-mdp-non-valide');
+       retour = false;
+    }else
+       $('.mdp-chiffre').removeClass('condition-mdp-non-valide');
+    
+    // Un caractère spécial
+    var caractSpe = $('#mdp-nouveau').val().match(/[!«#$%&'()*+,-./:;<>=?@\[\]\\^_|\{\}]/g);
+    if(!caractSpe){
+       $('.mdp-caractere-special').addClass('condition-mdp-non-valide');
+       retour = false;
+    }else
+       $('.mdp-caractere-special').removeClass('condition-mdp-non-valide');
 
 
 
 
+    // Contrôle mdp et mdp de confirmation soit identitique
+    if($('#mdp-confirme').val() !== $('#mdp-nouveau').val()){
+        $("#alerte-mdp-confirme").show();
+        retour = false;
+    }
+    
+    return retour;
+}
 
-/* *** */
-// AUTRES
-/* *** */
+
+
+/* *********** */
+/* *********** */
+// Page ajout.php
+/* *********** */
+/* *********** */
 
 // Toogle sur les checkbox plan et objet afin de toogle l'input prix1 et prix2
 $('#objet').change(function(){
@@ -204,10 +283,6 @@ $('#durabilite').on('blur', function(){
     controleNumerique($(this).val(), messageChiffre)
 });
 
-
-
-
-
 // Contrôle qu'un "sexe" a bien été sélectionné au click d'un des checkbox
 /* $('input[value="mâle"]').on('click', function(){
     var tabSexe = [$('input[value="mâle"]').is(':checked'), $('input[value="femelle"]').is(':checked'),
@@ -235,26 +310,56 @@ $('input[value="plan"]').on('click', function(){
     controleCheckbox(messageType, tabType);
 }); */
 
-// Contrôle au submit
-function verif(){
 
-    var ok = true;
 
-    if(infoTypeJs == "creature"){
-        // Contrôle qu'un "sexe" a bien été sélectionné
-        var tabSexe = [$('input[value="mâle"]').is(':checked'), $('input[value="femelle"]').is(':checked'),
-                                                                $('input[value="castré"]').is(':checked')];
-        if(!controleCheckbox(messageSexe, tabSexe))
-            ok = false;
 
-    }else if(infoTypeJs == "selle"){   
-        // Contrôle qu'un "type" a bien été sélectionné
-        var tabType = [$('input[value="objet"]').is(':checked'), $('input[value="plan"]').is(':checked')];
-        if(!controleCheckbox(messageType, tabType))
-            ok = false;
-    }
+/* ************ */
+/* ************ */
+// Page compte.php
+/* ************ */
+/* ************ */
 
-    return ok;
-}
+// Contrôle des différentes conditions de validités du mdp :
+
+$('#mdp-nouveau').on('input', function(){
+
+    // Entre 8 et 20 caractères
+    if($(this).val().length >= 8 && $(this).val().length <= 20)
+       $('.mdp-nbr-caractere').addClass('condition-mdp-valide');
+    else
+       $('.mdp-nbr-caractere').removeClass('condition-mdp-valide');
+
+    // Une majuscule
+    var maj = $(this).val().match(/[A-Z]/g);
+    if(maj)
+       $('.mdp-maj').addClass('condition-mdp-valide');
+    else
+       $('.mdp-maj').removeClass('condition-mdp-valide');
+       
+    // Une minuscule
+    var min = $(this).val().match(/[a-z]/g);
+    if(min)
+       $('.mdp-min').addClass('condition-mdp-valide');
+    else
+       $('.mdp-min').removeClass('condition-mdp-valide');
+
+    // Un chiffre
+    var chiffre = $(this).val().match(/[0-9]/g);
+    if(chiffre)
+       $('.mdp-chiffre').addClass('condition-mdp-valide');
+    else
+       $('.mdp-chiffre').removeClass('condition-mdp-valide');
+    
+    // Un caractère spécial
+    var caractSpe = $(this).val().match(/[!«#$%&'()*+,-./:;<>=?@\[\]\\^_|\{\}]/g);
+    if(caractSpe)
+       $('.mdp-caractere-special').addClass('condition-mdp-valide');
+    else
+       $('.mdp-caractere-special').removeClass('condition-mdp-valide');
+});
+
+
+
+
 
 

@@ -9,6 +9,7 @@ fieldset, form, label, legend, table, caption, tbody, tfoot, thead, tr, th, td, 
     box-sizing: border-box;
     color: black;
     text-transform: none;
+    list-style: none;
 }
 
 html{
@@ -39,19 +40,17 @@ html{
     display: none;
 }
 
-.condition-mdp-valide{
-    color: green;
-}
 
-.condition-mdp-non-valide{
-    color: red;
-    font-weight: bold;
-}
 
+/* **************************** */
 /* ---------- HEADER ---------- */
+/* **************************** */
 
 
+
+/* **************************** */
 /* ---------- BURGER ---------- */
+/* **************************** */
 
 .navbar .navbar-toggler{width: 2.3rem; height: 1.375rem; cursor: pointer; position: relative;}
 .navbar .navbar-toggler .burger{width: 100%; height: 0.25rem; background-color: white; display: block; position: absolute; top: 50%; transform: translateY(-50%); border-radius: 5px;}
@@ -63,7 +62,9 @@ html{
 
 
 
+/* ***************************** */
 /* ---------- ACCUEIL ---------- */
+/* ***************************** */
 
 header{background-color: blue;}
 
@@ -104,7 +105,9 @@ header{background-color: blue;}
 
 
 
+/* ******************************* */
 /* ---------- CONNEXION ---------- */
+/* ******************************* */
 
 .connexion form div {
     padding: 0;
@@ -112,7 +115,9 @@ header{background-color: blue;}
 
 
 
+/* ***************************** */
 /* ---------- GESTION ---------- */
+/* ***************************** */
 
 .gestion .block .onglet{
     font-weight: bold;
@@ -139,11 +144,79 @@ header{background-color: blue;}
     white-space: nowrap;
 }
 
+
+
+/* *************************** */
 /* ---------- AJOUT ---------- */
+/* *************************** */
 
 .ajout .block-caract-creature .ss-caract img{
     width: 2rem;
 }
+
+
+
+/* **************************** */
+/* ---------- COMPTE ---------- */
+/* **************************** */
+
+.connexion .titre-partie{
+    margin: 2.5rem 0 1rem;
+    font-size: 1.6rem;
+    font-weight: bold;
+}
+
+.connexion form .champ:nth-child(1n+2){
+    margin-top: 0.7rem;
+}
+
+/* .connexion form .champ label{
+    margin-bottom: 0.5rem;
+    font-size: 1.1rem;
+} */
+
+.connexion form .champ .block-conditions-mdp{
+    margin-top: 0.4rem;
+    font-size: 0.9rem;
+}
+
+.connexion form .champ .block-conditions-mdp ul{
+    margin-left: 2rem;
+}
+
+.connexion form .champ .block-conditions-mdp ul li{
+    list-style: circle;
+}
+
+.connexion form .submit{
+    margin-top: 1rem;
+    width: auto;
+}
+
+.connexion form .submit input[type="submit"]{
+    border-radius: 0px;
+}
+
+.connexion .accordion{
+    margin-top: 2rem;
+}
+
+
+
+/* ----- Class JS ----- */
+
+.condition-mdp-valide{
+    color: green;
+    list-style: disc !important;
+}
+
+.condition-mdp-non-valide{
+    color: red;
+    font-weight: bold;
+}
+
+
+
 
 
 

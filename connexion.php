@@ -27,12 +27,10 @@ if(isset($_GET['action'])){
 	    header('location:index.php');
 
     // Inscription dans la BDD
-    }elseif(
-        $_GET['action'] == 'inscription' && 
-        isset($_POST['creation']) &&
-        isset($_POST['mail']) &&
-        isset($_POST['mdp']) &&
-        isset($_POST['mdp_confirmation'])){
+    }elseif($_GET['action'] == 'inscription' && isset($_POST['creation']) 
+                                             && isset($_POST['mail']) 
+                                             && isset($_POST['mdp']) 
+                                             && isset($_POST['mdp_confirmation'])){
 
         $mail = trim($_POST['mail']);
         $mdp = trim($_POST['mdp']);
@@ -53,6 +51,7 @@ if(isset($_GET['action'])){
         // Si pas d'erreur
         if(empty($msg)){
 
+            // Vérification si existance du mail
             $verif_mail = $pdo->prepare("SELECT * FROM utilisateur WHERE mail = :mail");
             $verif_mail->bindParam(":mail", $mail, PDO::PARAM_STR);
             $verif_mail->execute();
@@ -74,11 +73,9 @@ if(isset($_GET['action'])){
         }
 
     // Connexion
-    }elseif(
-        $_GET['action'] == 'connexion' &&
-        isset($_POST['connexion']) &&
-        isset($_POST['mail']) &&
-        isset($_POST['mdp'])){
+    }elseif($_GET['action'] == 'connexion' && isset($_POST['connexion'])
+                                           && isset($_POST['mail'])
+                                           && isset($_POST['mdp'])){
 
         $mail = trim($_POST['mail']);
         $mdp = trim($_POST['mdp']);
