@@ -17,13 +17,28 @@ $mdp_confirme = "";
 $nom_perso = "";
 $nom_discord = "";
 
-// Variable de message pour le contrôle des variables $_POST
+// Variables de la sélection d'un serveur
+$select_nom_serveur = "";
+$select_nom_perso = "";
+$select_nom_discord = "";
+
+$supprimer_js = ""; // Action de suppression en cours. Pour permettre le show() sur le block de suppression du serveur
+$ajout_js = true; // Action d'ajout de serveur en cours. Pour permettre le show() sur le block d'ajout de serveur
+$action = false; // Résultat de l'action sur la BDD
+$tab_datalist_serveur = array();
+
+// Variables de message pour le contrôle des variables $_POST
+$pre_annonce_top = "";
+$annonce_top = "";
 $msg_compte_mail = "";
 $msg_compte_mdp_actuel = "";
 $msg_compte_mdp_nouveau = "";
 $msg_compte_mdp_confirme = "";
 $msg_compte_nom_perso = "";
 $msg_compte_nom_discord = "";
+$msg_compte_select_nom_serveur = "";
+$msg_compte_select_nom_perso = "";
+$msg_compte_select_nom_discord = "";
 $msg_compte_supprimer = "";
 
 
@@ -36,10 +51,15 @@ $msg_compte_supprimer = "";
 /* ********************************** */
 /* ********************************** */
 
-if(isset($_POST["valide_serveur"]) && isset($_POST["supprimer"]) && isset($_GET['id'])){
+if(isset($_POST["valide_supprimer"]) && isset($_POST["supprimer"]) && isset($_GET['id'])){
 
     $nom_serveur = trim($_POST["supprimer"]);
-
+    $supprimer_js = $_GET['id'];
+?>
+<script>
+    var supprimer = '<?= $supprimer_js ?>';
+</script>
+<?php
 
     /* ***************************** */
     // Contrôle de la variable d'entrée
@@ -62,7 +82,7 @@ if(isset($_POST["valide_serveur"]) && isset($_POST["supprimer"]) && isset($_GET[
         // CONTRÔLE NOM SERVEUR : Identique à $_POST["supprimer"]                                                                  
         if($verif['nom_serveur'] != $nom_serveur){
             $controle_variables = false;
-            $msg_compte_supprimer .= "<p class=\"alerte-msg\"> Le nom du serveur est incorrect </p>";
+            $msg_compte_supprimer .= "<p class=\"text-danger\"> Le nom du serveur est incorrect (Respectez les majuscules) </p>";
         }
 
         if($controle_variables){
@@ -70,33 +90,132 @@ if(isset($_POST["valide_serveur"]) && isset($_POST["supprimer"]) && isset($_GET[
             $delete = $pdo->exec("DELETE FROM info_serveur WHERE id_info_serveur = ".$_GET['id']."");
 
             if($delete !== false)
-                $annonce_top .= "<p class=\"alerte-msg\"> Suppression effectuée </p>";
+                $annonce_top .= "<p class=\"alert alert-success\"> Suppression effectuée </p>";
             else
-                $annonce_top .= "<p class=\"alerte-msg\"> Erreur lors de la suppression. Veuillez réessayer ultérieurement </p>";            
+                $annonce_top .= "<p class=\"alert alert-danger\"> Erreur lors de la suppression. Veuillez réessayer ultérieurement </p>";            
         }
     }else   
         header('location:http://ark-market/index.php');
-        
-    $controle_variables = true; //Réinitialisation
 }
 
 
 
 
-/* ******************************************** */
-// RECUPÉRATION DES INFOS SERVEUR DE L'UTILISATEUR
-/* ******************************************** */
-$PDO_info_serveur = $pdo->query("SELECT * FROM serveur s, info_serveur i
-                                            WHERE s.id_serveur = i.id_serveur
-                                            AND i.id_utilisateur = ".$_SESSION["utilisateur"]['id_utilisateur']."
-                                            ORDER BY i.principal DESC, s.nom_serveur DESC");
+/* ************************** */
+/* ************************** */
+// AJOUT D'UN SERVEUR A SA LISTE
+/* ************************** */
+/* ************************** */
+
+if(isset($_POST["valide_select_serveur"]) && isset($_POST["select_nom_serveur"]) 
+                                                   && isset($_POST["select_nom_perso"])
+                                                   && isset($_POST["select_nom_discord"])){
+
+    $select_nom_serveur = $_POST["select_nom_serveur"];
+    $select_nom_perso = $_POST["select_nom_perso"];
+    $select_nom_discord = $_POST["select_nom_discord"];
+
+    /* ***************************** */
+    // Contrôle des variables d'entrées
+    /* ***************************** */
+
+    // Récupération de la liste des serveurs
+    $PDO_liste_serveur = $pdo->query("SELECT nom_serveur FROM serveur");
+
+    while($liste_serveur = $PDO_liste_serveur->fetch(PDO::FETCH_ASSOC)){
+        $tab_datalist_serveur[] = $liste_serveur["nom_serveur"];
+    }
+
+    // CONTRÔLE NOM SERVEUR : Obligatoire et dans la liste proposé
+    if(array_search($select_nom_serveur, $tab_datalist_serveur) === false){
+        $controle_variables = false;
+        $msg_compte_select_nom_serveur = "<p class=\"text-danger\"> On choisit dans la liste svp </p>";
+    }
+
+    // CONTRÔLE NOM PERSO : Oligatoire et entre 2 et 20 caractères
+    if(empty($select_nom_perso) || strlen($select_nom_perso) < 2 || strlen($select_nom_perso) > 20){
+        $controle_variables = false;
+        $msg_compte_select_nom_perso = "<p class=\"text-danger\"> Entre 2 et 20 caractères </p>";
+    }
+
+    // CONTRÔLE NOM DISCORD : Entre 2 et 20 caractères
+    if(!empty($select_nom_discord)){
+        if(strlen($select_nom_discord) < 2 || strlen($select_nom_discord) > 20){
+            $controle_variables = false;
+            $msg_compte_select_nom_discord = "<p class=\"text-danger\"> Entre 2 et 20 caractères </p>";
+        }
+    }
+
+    // CONTRÔLE ENTRÉE SERVEUR : Pas d'entrée serveur préexistante pour ce serveur  
+    $PDO_verif = $pdo->query("SELECT i.id_info_serveur FROM info_serveur i, serveur s WHERE i.id_serveur = s.id_serveur
+                                                                                    AND s.nom_serveur = '$select_nom_serveur'
+                                                                                    AND i.id_utilisateur = ".$_SESSION["utilisateur"]["id_utilisateur"]."");
+
+    if($PDO_verif->rowcount()){
+        $controle_variables = false;
+        $msg_compte_select_nom_serveur = "<p class=\"text-danger\"> Ce serveur est déjà dans votre liste ! </p>";
+    }
+
+    if($controle_variables){
+
+        // Si absence d'information concernant un serveur dans la SESSION C'est qu'il n'y a pas de serveur dans la liste de l'utilisateur. Du coup la nouvelle entrée sera le serveur principal
+        if(empty($_SESSION["serveur"]["id_serveur"])){
+            $principal = 1;
+        }else{
+            $principal = 0;
+
+        }
+        $enregistrer = $pdo->prepare("INSERT INTO info_serveur (id_info_serveur, nom_perso, nom_discord, principal, id_utilisateur, date_creation, id_serveur)
+                                                        VALUES (NULL, :nom_perso, :nom_discord, :principal, ".$_SESSION["utilisateur"]["id_utilisateur"].", NOW(), 
+                                                                        (SELECT id_serveur FROM serveur WHERE nom_serveur = '$select_nom_serveur'))");
+
+        $enregistrer->bindParam(":nom_perso", $select_nom_perso, PDO::PARAM_STR);
+        $enregistrer->bindParam(":nom_discord", $select_nom_discord, PDO::PARAM_STR);
+        $enregistrer->bindParam(":principal", $principal, PDO::PARAM_STR);
+
+        $enregistrer->execute();
+
+        if($enregistrer){
+            $annonce_top = "<p class=\"alert alert-success\"> Serveur ajouter à votre liste </p>";
+            $select_nom_serveur = "";
+            $select_nom_perso = "";
+            $select_nom_discord = "";
+        }
+        else
+            $annonce_top = "<p class=\"alert alert-danger\"> Erreur lors de la modification. Veuillez réessayer ultérieurement </p>";
+
+    }else{
+        $ajout_js = false;
+?>
+        <script>
+            var ajout = '<?= $ajout_js ?>';
+        </script>
+<?php 
+    }
+}
 
 
-/* *************************************************** */
-// RECUPÉRATION DE LA LISTE DES SERVEURS DE L'UTILISATEUR
-/* *************************************************** */
-$PDO_liste_serveur = $pdo->query("SELECT * FROM serveur s, info_serveur i WHERE s.id_serveur = i.id_serveur
-                                                                        AND i.id_utilisateur = ".$_SESSION['utilisateur']['id_utilisateur']."");
+
+
+/* ****************************************** */
+// RECUPÉRATION DE LA LISTE DE TOUS LES SERVEURS
+/* ****************************************** */
+
+$PDO_liste_serveur = $pdo->query("SELECT nom_serveur FROM serveur");
+
+while($liste_serveur = $PDO_liste_serveur->fetch(PDO::FETCH_ASSOC)){
+    $tab_datalist_serveur[] = $liste_serveur["nom_serveur"];
+}
+
+ // Pour contrôle js du champ
+$liste_serveur_js = "";
+$liste_serveur_js .= implode(",", $tab_datalist_serveur);
+
+?>
+<script>
+    var listeServeur = '<?= $liste_serveur_js ?>';
+</script>
+<?php
 
 
 
@@ -107,10 +226,9 @@ $PDO_liste_serveur = $pdo->query("SELECT * FROM serveur s, info_serveur i WHERE 
 /* ************************************** */
 /* ************************************** */
 
-if((isset($_POST["valide_compte"]) || isset($_POST["valide_mdp"])
+if(isset($_POST["valide_compte"]) || isset($_POST["valide_mdp"])
                                   || isset($_POST["valide_principal"])
-                                  || isset($_POST["valide_serveur"]))
-                                  && empty($_POST['supprimer'])){
+                                  || isset($_POST["valide_serveur"])){
                                     
     // Modification de la partie "Mon compte" (mail)
     if(isset($_POST["valide_compte"]) && isset($_POST["mail"])){
@@ -126,7 +244,8 @@ if((isset($_POST["valide_compte"]) || isset($_POST["valide_mdp"])
         $verif_mail = preg_match("/^[_a-z0-9-]+(\.[_a-z0-9-]+)*@[a-z0-9-]+(\.[a-z0-9-]+)*(\.[a-z]{2,})$/", $mail);
         if(empty($mail) || !$verif_mail){
             $controle_variables = false;
-            $msg_compte_mail .= "<p class=\"alerte-msg\"> Veuillez entrer une adresse mail valide </p>";
+            $msg_compte_mail .= "<p class=\"text-danger\"> Une adresse mail valide, c'est mieux ! </p>";
+            $annonce_top = "<p class=\"alert alert-danger\"> Au moinds l'un des champs est incorrect </p>";
         }
 
         if($controle_variables){
@@ -137,14 +256,17 @@ if((isset($_POST["valide_compte"]) || isset($_POST["valide_mdp"])
             $verif->execute();
 
             if($verif->rowcount()){
+
                 $controle_variables = false;
-                $msg_compte_mail = "<p class=\"alerte-msg\"> Cette adresse mail est déjà utilisée </p>";
+                $msg_compte_mail = "<p class=\"text-danger\"> Cette adresse mail est déjà utilisée </p>";
+                $annonce_top = "Cette adresse mail est déjà utilisée";
             
             }else{
 
                 $enregistrer = $pdo->prepare("UPDATE utilisateur SET mail = :mail WHERE id_utilisateur = ".$_SESSION['utilisateur']['id_utilisateur']."");
                 $enregistrer->bindParam(':mail', $mail, PDO::PARAM_STR);
-
+                
+                $pre_annonce_top = "<p class=\"alert alert-success\"> Modification du mail effectué </p>";
             }
         }
 
@@ -167,15 +289,18 @@ if((isset($_POST["valide_compte"]) || isset($_POST["valide_mdp"])
         $verif_mdp = preg_match('#^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*\W).{8,20}$#', $mdp_nouveau);
         if(empty($verif_mdp) || !$verif_mdp){
             $controle_variables = false;
-            $msg_compte_mdp_nouveau = "<p class=\"alerte-msg\"> Veuillez remplir toutes les conditions </p>";
+            $msg_compte_mdp_nouveau = "<p class=\"text-danger\"> Veuillez remplir toutes les conditions </p>";
+            $annonce_top = "<p class=\"alert alert-danger\"> Au moinds l'un des champs est incorrect </p>";
         }
 
         if($mdp_nouveau !== $mdp_confirme){
             $controle_variables = false;
-            $msg_compte_mdp_confirme = "<p class=\"alerte-msg\"> Le mot de passe de confirmation doit être similaire au nouveau mot de passe </p>";
+            $msg_compte_mdp_confirme = "<p class=\"text-danger\"> Le mot de passe de confirmation doit être similaire au nouveau mot de passe </p>";
+            $annonce_top = "<p class=\"alert alert-danger\"> Au moinds l'un des champs est incorrect </p>";
         }    
 
-        if(empty($controle_variables)){
+        
+        if($controle_variables){
 
             // Récupération du mdp correspondant à ce mail
             $PDO_verif_mdp = $pdo->prepare("SELECT mdp FROM utilisateur WHERE mail = :mail
@@ -196,8 +321,13 @@ if((isset($_POST["valide_compte"]) || isset($_POST["valide_mdp"])
                 $enregistrer->bindParam(':mdp_nouveau', $mdp_nouveau, PDO::PARAM_STR);
                 $enregistrer->bindParam(':mail', $mail, PDO::PARAM_STR);
 
-            }else
-                $msg_compte_mdp_actuel = "<p class=\"alerte-msg\"> Mot de passe est incorrect </p>";
+                $pre_annonce_top = "<p class=\"alert alert-success\"> Modification du mot de passe effectué </p>";
+
+            }else{
+                $controle_variables = false;
+                $msg_compte_mdp_actuel = "<p class=\"text-danger\"> Mot de passe incorrect </p>";
+                $annonce_top = "<p class=\"alert alert-danger\"> Au moinds l'un des champs est incorrect </p>";
+            }
 
         }
 
@@ -218,7 +348,7 @@ if((isset($_POST["valide_compte"]) || isset($_POST["valide_mdp"])
 
 
         // Contrôle que l'utilisateur possède une entrée sur ce serveur
-        $verif = $pdo->prepare("SELECT id_info_serveur FROM info_serveur WHERE id_serveur = :choix_serveur");
+        $verif = $pdo->prepare("SELECT nom_perso FROM info_serveur WHERE id_info_serveur = :choix_serveur");
         $verif->bindParam(":choix_serveur", $choix_serveur, PDO::PARAM_STR);
         $verif->execute();
 
@@ -229,11 +359,15 @@ if((isset($_POST["valide_compte"]) || isset($_POST["valide_mdp"])
                                                                             AND id_utilisateur = ".$_SESSION['utilisateur']['id_utilisateur']."");
 
             if($enregistrer !== false){
+
                 $enregistrer = $pdo->prepare("UPDATE info_serveur SET principal = 1 WHERE id_info_serveur = :id_info_serveur 
                                                                                 AND id_utilisateur = ".$_SESSION['utilisateur']['id_utilisateur']."");
-                $enregistrer->bindParam(":id_info_serveur", $_POST['choix_serveur'], PDO::PARAM_STR);                                                    
+                $enregistrer->bindParam(":id_info_serveur", $_POST['choix_serveur'], PDO::PARAM_STR);
+                
+                $pre_annonce_top = "<p class=\"alert alert-success\"> Modification du serveur principal effectué </p>";
+
             }else
-                $annonce_top = "<p class=\"alerte-msg\"> Erreur lors de la modification. Veuillez réessayer ultérieurement </p>";
+                $annonce_top = "<p class=\"alert alert-danger\"> Erreur lors de la modification. Veuillez réessayer ultérieurement </p>";
 
 
         }else
@@ -244,7 +378,6 @@ if((isset($_POST["valide_compte"]) || isset($_POST["valide_mdp"])
     }elseif(isset($_POST["valide_serveur"]) && isset($_POST["nom_perso"]) 
                                             && isset($_POST["nom_discord"])
                                             && isset($_GET["id"])){
-
 
         $nom_perso = trim($_POST["nom_perso"]);
         $nom_discord = trim($_POST["nom_discord"]);
@@ -258,14 +391,16 @@ if((isset($_POST["valide_compte"]) || isset($_POST["valide_mdp"])
         // CONTRÔLE NOM PERSO : Oligatoire et entre 2 et 20 caractères
         if(empty($nom_perso) || strlen($nom_perso) < 2 || strlen($nom_perso) > 20){
             $controle_variables = false;
-            $msg_compte_nom_perso = "<p class=\"alerte-msg\"> Entre 2 et 20 caractères </p>";
+            $msg_compte_nom_perso = "<p class=\"text-danger\"> Entre 2 et 20 caractères </p>";
+            $annonce_top = "<p class=\"alert alert-danger\"> Au moinds l'un des champs est incorrect </p>";
         }
 
         // CONTRÔLE NOM DISCORD : Entre 2 et 20 caractères
-        if(!empty($nom_perso)){
-            if(strlen($nom_perso) < 2 || strlen($nom_perso) > 20){
+        if(!empty($nom_discord)){
+            if(strlen($nom_discord) < 2 || strlen($nom_discord) > 20){
                 $controle_variables = false;
-                $msg_compte_nom_discord = "<p class=\"alerte-msg\"> Entre 2 et 20 caractères </p>";
+                $msg_compte_nom_discord = "<p class=\"text-danger\"> Entre 2 et 20 caractères </p>";
+                $annonce_top = "<p class=\"alert alert-danger\"> Au moinds l'un des champs est incorrect </p>";
             }
         }        
 
@@ -282,6 +417,8 @@ if((isset($_POST["valide_compte"]) || isset($_POST["valide_mdp"])
                 $enregistrer->bindParam(":nom_discord", $nom_discord, PDO::PARAM_STR);
                 $enregistrer->bindParam(":id_info_serveur", $id_info_serveur, PDO::PARAM_STR);
 
+                $pre_annonce_top = "<p class=\"alert alert-success\"> Modification effectué </p>";
+
             }else
                 header('location:http://ark-market/index.php');
         }
@@ -289,191 +426,329 @@ if((isset($_POST["valide_compte"]) || isset($_POST["valide_mdp"])
         header('location:http://ark-market/index.php');
 
     // Si pas d'erreur on exécute les prepare()
-    if(empty($control_variables)){
+    if($controle_variables){
 
         $enregistrer->execute();
 
-        if($enregistrer)
-            $annonce_top = "<p class=\"alerte-msg\"> Modification effectuée </p>";
+        if($enregistrer){
 
-        else
-            $annonce_top = "<p class=\"alerte-msg\"> Erreur lors de la modification. Veuillez réessayer ultérieurement </p>";
+            $annonce_top = $pre_annonce_top;
+            $action = true;
+
+        }else
+            $annonce_top = "<p class=\"alert alert-danger\"> Erreur lors de la modification. Veuillez réessayer ultérieurement </p>";
     }
 }
+
+
+/* *************************************************** */
+// RECUPÉRATION DE LA LISTE DES SERVEURS DE L'UTILISATEUR
+/* *************************************************** */
+$PDO_liste_serveur_utilisateur = $pdo->query("SELECT * FROM serveur s, info_serveur i WHERE s.id_serveur = i.id_serveur
+                                                                        AND i.id_utilisateur = ".$_SESSION['utilisateur']['id_utilisateur']."");
+
+
+/* ******************************************** */
+// RECUPÉRATION DES INFOS SERVEUR DE L'UTILISATEUR
+/* ******************************************** */
+$PDO_info_serveur = $pdo->query("SELECT * FROM serveur s, info_serveur i
+                                            WHERE s.id_serveur = i.id_serveur
+                                            AND i.id_utilisateur = ".$_SESSION["utilisateur"]['id_utilisateur']."
+                                            ORDER BY i.principal DESC, s.nom_serveur DESC");
+
 
 include '../inc/header.inc.php';
 ?>
 
-<main class="connexion">
+<main class="compte">
     <div class="container">
+        <div class="block-formulaire row justify-content-center">
+            <div class="col-lg-9 col-xl-8 col-xxl-6">
 
-    <p> <?= $annonce_top ?> </p>
+                <?= $annonce_top ?>
 
-        <div class="block-profil">
-            
-            <p class="titre-partie">Mon compte</p>
-
-            <form action="" method="post" class="compte initmarg row justify-content-center">
-
-                <div class="champ">
-                    <label for="mail" class="form-label">Adresse mail</label>
-                    <input class="form-control" type="email" id="mail" name="mail" placeholder="Mail" value="<?= $mail ?>">
-                </div>
-                <div class="submit">
-                    <input type="submit" class="btn btn-success" name ="valide_compte" value="Valider la modification">
-                    <?= $msg_compte_mail ?>
-                </div>
-
-            </form>
-
-            <p class="titre-partie">Changement de mot de passe</p>
-            <form action="" method="post" class="mdp initmarg row justify-content-center" onsubmit="return compteMdp(this);">
-
-                <div class="champ">
-                    <label for="mdp-actuel" class="form-label">Ancien mot de passe</label>
-                    <input class="form-control" type="text" id="mdp-actuel" name="mdp_actuel" placeholder="Votre ancien mot de passe">
-                    <?= $msg_compte_mdp_actuel ?>
-                </div>
-                
-                <div class="champ">
-                    <label for="mdp-nouveau" class="form-label">Nouveau mot de passe</label>
-                    <input class="form-control" type="text" id="mdp-nouveau" name="mdp_nouveau" placeholder="Votre nouveau mot de passe">
-                    <?= $msg_compte_mdp_nouveau ?>
-                </div>
-
-                <div class="champ">
-                    <label for="mdp-confirme" class="form-label">Confirmation</label>
-                    <input class="form-control" type="text" id="mdp-confirme" name="mdp_confirme" placeholder="Confirmez votre nouveau mot de passe">
-                    <?= $msg_compte_mdp_confirme ?>
-                    <p class="alerte-champ" id="alerte-mdp-confirme">Le mot de passe de confirmation doit être similaire au nouveau mot de passe</p>
-                    <div class="block-conditions-mdp">
-                        <p>Conditions :</p>
-                        <ul>
-                            <li class="mdp-nbr-caractere">Entre 8 et 20 caractères</li>
-                            <li class="mdp-maj">Une majuscule</li>
-                            <li class="mdp-min">Une minuscule</li>
-                            <li class="mdp-chiffre">Un chiffre</li>
-                            <li class="mdp-caractere-special">Un caractère spécial</li>
-                        </ul>
-                    </div>
-                </div>
-
-                <div class="submit">
-                    <input type="submit" class="btn btn-success" name ="valide_mdp" value="Valider les modifications">
-                </div>
-            </form>
-        </div>
-
-        <div class="block-serveur">
-
-            <p class="titre-partie">Mes serveurs</p>
-<?php
-            if($PDO_liste_serveur->rowcount()){
-?>
-                <form action="" method="post" class="choix-serveur initmarg row justify-content-center">
-                    <div class="champ">
-                        <label for="choix-serveur" class="form-label">Serveur principal</label>
-                        <select name="choix_serveur" id="choix-serveur" class="form-select">
-<?php
-                        while($liste_serveur = $PDO_liste_serveur->fetch(PDO::FETCH_ASSOC)){
-?>
-                            <option <?= ($liste_serveur['principal'] == 1)?"selected":"" ?>  value="<?= $liste_serveur['id_serveur'] ?>"> <?= $liste_serveur['nom_serveur'] ?> </option>
-<?php
-                        }
-?>
-                        </select>
+                <div class="block-profil">
+                    
+                    <!-- ----------------------- -->
+                    <!-- ----- PARTIE MAIL ----- -->
+                    <!-- ----------------------- -->
+                    <div class="titre-partie">
+                        <p class="text-center text-sm-start">Mon compte</p>
                     </div>
 
-                    <div class="submit">
-                        <input type="submit" class="btn btn-success" name ="valide_principal" value="Changer">
+                    <form action="" method="post" class="initmarg row justify-content-center" onsubmit="return compteMail(this);">
+
+                        <div class="champ row" id="champ-mail">
+                            <label for="mail" class="col-form-label col-sm-3 col-md-4">Adresse mail</label>
+                            <div class ="col-sm-9 col-md-8">
+                                <input type="text" id="mail" name="mail" class="form-control" placeholder="Mail" value="<?= $mail ?>">
+                            </div>
+                            <?= $msg_compte_mail ?>
+                        </div>
+                        <div class="submit">
+                            <input type="submit" name ="valide_compte" class="btn btn-success" value="Valider la modification ">
+                        </div>
+
+                    </form>
+
+
+                    <!-- ---------------------- -->
+                    <!-- ----- PARTIE MDP ----- -->
+                    <!-- ---------------------- -->
+                    <div class="titre-partie">
+                        <p class="text-center text-sm-start">Changement de mot de passe</p>
                     </div>
-                </form>
 
-                <div class="accordion" id="accordeon-serveur">
-<?php
-                    $i = 0;
-                    while($info_serveur = $PDO_info_serveur->fetch(PDO::FETCH_ASSOC)){
+                    <form action="" method="post" class="initmarg row justify-content-center" onsubmit="return compteMdp(this);">
 
-                        // Récupération nombre de produit de l'utilisateur pour affichage
-                        $PDO_somme_article_creature = $pdo->query("SELECT COUNT(*) AS total_creature FROM creature WHERE id_serveur = ".$info_serveur["id_serveur"]." AND id_utilisateur = ".$_SESSION['utilisateur']['id_utilisateur']."");
-                        $PDO_somme_article_selle = $pdo->query("SELECT COUNT(*) AS total_selle FROM selle WHERE id_serveur = ".$info_serveur["id_serveur"]." AND id_utilisateur = ".$_SESSION['utilisateur']['id_utilisateur']."");
-                        $PDO_somme_article_arme = $pdo->query("SELECT COUNT(*) AS total_arme FROM arme WHERE id_serveur = ".$info_serveur["id_serveur"]." AND id_utilisateur = ".$_SESSION['utilisateur']['id_utilisateur']."");
-                        $PDO_somme_article_armure = $pdo->query("SELECT COUNT(*) AS total_armure FROM armure WHERE id_serveur = ".$info_serveur["id_serveur"]." AND id_utilisateur = ".$_SESSION['utilisateur']['id_utilisateur']."");
-
-                        $somme_article_creature = $PDO_somme_article_creature->fetch(PDO::FETCH_ASSOC);
-                        $somme_article_selle = $PDO_somme_article_selle->fetch(PDO::FETCH_ASSOC);
-                        $somme_article_arme = $PDO_somme_article_arme->fetch(PDO::FETCH_ASSOC);
-                        $somme_article_armure = $PDO_somme_article_armure->fetch(PDO::FETCH_ASSOC);
-
-                        $total_produit = $somme_article_creature['total_creature'] + $somme_article_selle['total_selle'] + $somme_article_arme['total_arme'] + $somme_article_armure['total_armure'];
-
-                        $i++;
-?>
-                        <div class="accordion-item">
-                            <h2 class="accordion-header" id="head<?= $i ?>">
-                                <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapse<?= $i ?>" aria-expanded="true" aria-controls="collapse<?= $i ?>">
-                                    <div class="nom-serveur">
-                                        <p> <?= $info_serveur["nom_serveur"] ?> </p>
-                                    </div>
-                                    <div class="info-serveur">
-                                        <p> Nombre de produit : <?= $total_produit ?> </p>
-                                    </div>
-<?php
-                                    // Au regarde de la requête SQL le premier de la liste est le serveur principal
-                                    if($i == 1){
-?>
-                                    <div class="serveur-principal">
-                                        <p> Serveur principal</p>
-                                    </div>
-<?php
-                                    }
-?>
-                                </button>
-                            </h2>
-                            <div id="collapse<?= $i ?>" class="accordion-collapse collapse <?= ($i++ == 1 )?"show":"" ?>" aria-labelledby="heading<?= $i ?>" data-bs-parent="#accordeon-serveur">
-                                <form action="<?= URL ?>gestion/compte.php?id=<?= $info_serveur["id_info_serveur"] ?>" method="post" class="accordion-body">
-
-                                    <div class="champ">
-                                        <label for="nom-perso-<?= $i ?>" class="form-label">Nom du joueur</label>
-                                        <input class="form-control" type="text" id="nom-perso-<?= $i ?>" name="nom_perso" placeholder="Joueur" value="<?= (isset($_POST["nom_perso"]))?$_POST["nom_perso"]:$info_serveur["nom_perso"] ?>">
-                                        <?= $msg_compte_nom_perso ?>
-                                    </div>
-
-                                    <div class="champ">
-                                        <label for="nom-discord-<?= $i ?>" class="form-label">Nom Discord</label>
-                                        <input class="form-control" type="text" id="nom-discord-<?= $i ?>" name="nom_discord" placeholder="Discord" value="<?= (isset($_POST["nom_discord"]))?$_POST["nom_discord"]:$info_serveur["nom_discord"] ?>">
-                                        <?= $msg_compte_nom_discord ?>
-                                    </div>
-
-                                    <div class="champ supprimer">
-                                        <label for="supprimer<?= $i ?>" class="form-label">Supprimer le serveur</label>
-                                        <input class="form-control supprimer" type="text" id="supprimer-<?= $i ?>" name="supprimer" placeholder="Écrivez le nom du serveur">
-                                        <?= $msg_compte_supprimer ?>
-                                    </div>
-
-                                    <div class="submit">
-                                        <input type="submit" class="btn btn-success" name ="valide_serveur" value="Valider les modifications">
-                                    </div>
-
-                                </form>
+                        <div class="champ row">
+                            <label for="mdp-actuel" class="col-form-label col-sm-3 col-md-4">Ancien mot de passe</label>
+                            <div class ="col-sm-9 col-md-8">
+                                <input type="password" id="mdp-actuel" name="mdp_actuel" class="form-control" placeholder="Votre ancien mot de passe">
+                                <?= $msg_compte_mdp_actuel ?>
                             </div>
                         </div>
+                        
+                        <div class="champ row">
+                            <label for="mdp-nouveau" class="col-form-label col-sm-3 col-md-4">Nouveau mot de passe</label>
+                            <div class ="col-sm-9 col-md-8">
+                                <input type="password" id="mdp-nouveau" name="mdp_nouveau" class="form-control" placeholder="Votre nouveau mot de passe">
+                                <?= $msg_compte_mdp_nouveau ?>
+                            </div>
+                        </div>
+
+                        <div class="champ row">
+                            <label for="mdp-confirme" class="col-form-label col-sm-3 col-md-4">Confirmation</label>
+                            <div class ="block-mdp-confirme col-sm-9 col-md-8">
+                                <input type="password" id="mdp-confirme" name="mdp_confirme" class="form-control" placeholder="Confirmez votre nouveau mot de passe">
+                                <?= $msg_compte_mdp_confirme ?>
+                            </div>
+                            <div class="d-none d-sm-block col-sm-3 col-md-4"></div>
+                            <div id="block-conditions-mdp" class="col-sm-9 col-md-6">
+                                <p>Conditions :</p>
+                                <ul>
+                                    <li class="mdp-nbr-caractere">Entre 8 et 20 caractères</li>
+                                    <li class="mdp-maj">Une majuscule</li>
+                                    <li class="mdp-min">Une minuscule</li>
+                                    <li class="mdp-chiffre">Un chiffre</li>
+                                    <li class="mdp-caractere-special">Un caractère spécial</li>
+                                </ul>
+                            </div>
+                        </div>
+
+                        <div class="submit">
+                            <input type="submit" name ="valide_mdp" class="btn btn-success" value="Valider la modification">
+                        </div>
+                    </form>
+                </div>
+
+                <div class="block-serveur">
+
+                    <div class="titre-partie row">
+                        <p class="initpad text-center text-sm-start" >Mes serveurs</p>
+                    </div>    
+
+
+                    <!-- ------------------------------------------ -->
+                    <!-- ----- PARTIE CHOIX SERVEUR PRINCIPAL ----- -->
+                    <!-- ------------------------------------------ -->
+<?php
+                    if($PDO_liste_serveur_utilisateur->rowcount()){
+?>
+                        <form action="" method="post" class="initmarg row justify-content-center">
+                            <div class="champ row">
+                                <label for="choix-serveur" class="col-form-label col-sm-3 col-md-4">Serveur principal</label>
+                                <div class="col-sm-9 col-md-8">
+                                    <select name="choix_serveur" id="choix-serveur" class="form-select">
+<?php
+                                    while($liste_serveur_utilisateur = $PDO_liste_serveur_utilisateur->fetch(PDO::FETCH_ASSOC)){
+?>
+                                        <option <?= ($liste_serveur_utilisateur['principal'] == 1)?"selected":"" ?>  value="<?= $liste_serveur_utilisateur['id_info_serveur'] ?>"> <?= $liste_serveur_utilisateur['nom_serveur'] ?> </option>
+<?php
+                                }
+?>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="submit">
+                                <input type="submit" name ="valide_principal" class="btn btn-success" value="Valider la modification">
+                            </div>
+                        </form>
 <?php
                     }
 ?>
-                </div>                
+
+                    <!-- ------------------------------------------------ -->
+                    <!-- ----- PARTIE AJOUT D'UN SERVEUR A LA LISTE ----- -->
+                    <!-- ------------------------------------------------ -->
+
+                    <button class="btn btn-primary align-baseline w-auto" id="ajout-serveur">Ajouter un serveur</button>
+
+                    <form action="" method="post" style="display:none;" class="form-ajout-serveur initmarg mt-3 row justify-content-center" onsubmit="return compteAjoutServeur(this);">
+                        <div class="row">
+                            <label for="select-nom-serveur" class="col-form-label col-sm-3 col-md-4">Sélectionner un serveur</label>
+                            <div id="div-select-nom-serveur" class ="col-sm-9 col-md-8">
+                                <input type="text" id="select-nom-serveur" name="select_nom_serveur" class="form-control" placeholder="Serveur" list="list-serveur" value="<?= $select_nom_serveur ?>">
+                                <datalist id="list-serveur">
 <?php
-            }else{
+                                    foreach($tab_datalist_serveur AS $valeur){
 ?>
-            <p>Vous n'avez pas encore sélectionner de serveur</p>
+                                        <option value="<?= $valeur ?>">
 <?php
-            }
+                                    }       
+?> 
+                                </datalist>
+                                <?= $msg_compte_select_nom_serveur ?>
+                            </div>
+                        </div>
+
+                        <div class="champ row">
+                            <label for="select-nom-perso" class="col-form-label col-sm-3 col-md-4">Nom du joueur</label>
+                            <div id="select-nom-joueur" class ="col-sm-9 col-md-8">
+                                <input type="text" id="select-nom-perso" name="select_nom_perso" class="form-control" placeholder="Joueur" value="<?= (isset($_POST["select_nom_perso"]))?$select_nom_perso:"" ?>">
+                                <?= $msg_compte_select_nom_perso ?>
+                            </div>
+                        </div>
+
+                        <div class="champ row">
+                            <label for="select-nom-discord" class="col-form-label col-sm-3 col-md-4">Nom Discord</label>
+                            <div id="select-nom-discord" class ="col-sm-9 col-md-8">
+                                <input type="text" id="select-nom-discord" name="select_nom_discord" class="form-control" placeholder="Discord" value="<?= (isset($_POST["select_nom_discord"]))?$select_nom_discord:"" ?>">
+                                <?= $msg_compte_select_nom_discord ?>
+                            </div>
+                        </div>
+
+                        <div class="submit">
+                            <input type="submit" name ="valide_select_serveur" class="btn btn-success" value="Enregistrer ce serveur">
+                        </div>
+                    </form>
+<?php
+                    if($PDO_liste_serveur_utilisateur->rowcount()){
+?>
+                        <div class="accordion mt-3" id="accordeon-serveur">
+<?php
+                            $i = 0;
+                            while($info_serveur = $PDO_info_serveur->fetch(PDO::FETCH_ASSOC)){
+
+                                // Récupération nombre de produit de l'utilisateur pour affichage
+                                $PDO_somme_article_creature = $pdo->query("SELECT COUNT(*) AS total_creature FROM creature WHERE id_serveur = ".$info_serveur["id_serveur"]." AND id_utilisateur = ".$_SESSION['utilisateur']['id_utilisateur']."");
+                                $PDO_somme_article_selle = $pdo->query("SELECT COUNT(*) AS total_selle FROM selle WHERE id_serveur = ".$info_serveur["id_serveur"]." AND id_utilisateur = ".$_SESSION['utilisateur']['id_utilisateur']."");
+                                $PDO_somme_article_arme = $pdo->query("SELECT COUNT(*) AS total_arme FROM arme WHERE id_serveur = ".$info_serveur["id_serveur"]." AND id_utilisateur = ".$_SESSION['utilisateur']['id_utilisateur']."");
+                                $PDO_somme_article_armure = $pdo->query("SELECT COUNT(*) AS total_armure FROM armure WHERE id_serveur = ".$info_serveur["id_serveur"]." AND id_utilisateur = ".$_SESSION['utilisateur']['id_utilisateur']."");
+
+                                $somme_article_creature = $PDO_somme_article_creature->fetch(PDO::FETCH_ASSOC);
+                                $somme_article_selle = $PDO_somme_article_selle->fetch(PDO::FETCH_ASSOC);
+                                $somme_article_arme = $PDO_somme_article_arme->fetch(PDO::FETCH_ASSOC);
+                                $somme_article_armure = $PDO_somme_article_armure->fetch(PDO::FETCH_ASSOC);
+
+                                $total_produit = $somme_article_creature['total_creature'] + $somme_article_selle['total_selle'] + $somme_article_arme['total_arme'] + $somme_article_armure['total_armure'];
+
+                                $i++;
 ?>
 
+
+                                <!-- -------------------------------------------------- -->
+                                <!-- ----- PARTIE POUR CHAQUE SERVEUR DE LA LISTE ----- -->
+                                <!-- -------------------------------------------------- -->
+
+                                <div class="accordion-item">
+                                    <h2 class="accordion-header" id="heading<?= $i ?>">
+                                        <button type="button" id="boutton-<?= $info_serveur["id_info_serveur"] ?>" class="accordion-button <?= ($i != 1)?"collapsed":""?>" data-bs-toggle="collapse" data-bs-target="#collapse-<?= $info_serveur["id_info_serveur"] ?>" aria-expanded="true" aria-controls="collapse-<?= $info_serveur["id_info_serveur"] ?>">
+                                            <div class="nom-serveur w-50">
+                                                <p id="nom-serveur-<?= $i ?>"> <?= $info_serveur["nom_serveur"] ?> </p>
+                                            </div>
+                                            <div class="info-serveur d-none d-sm-inline-block">
+                                                <p> Offre<?= ($total_produit == 0)?"":"s" ?> : <?= $total_produit ?> </p>
+                                            </div>
+<?php
+                                            // Au regarde de la requête SQL le premier de la liste est le serveur principal
+                                            if($i == 1){
+?>
+<!--                                            <div class="serveur-principal d-none d-sm-inline-block">
+                                                    <p> Principal</p>
+                                                </div> -->
+<?php
+                                            }
+?>
+                                        </button>
+                                    </h2>
+                                    <div id="collapse-<?= $info_serveur["id_info_serveur"] ?>" class="accordion-collapse collapse <?= ($i == 1 && !isset($_GET["id"]))?"show":"" ?>" aria-labelledby="heading<?= $i ?>" data-bs-parent="#accordeon-serveur">
+                                        <div class="accordion-body">
+                                            <form action="<?= URL ?>gestion/compte.php?id=<?= $info_serveur["id_info_serveur"] ?>" method="post" class="row justify-content-center" onsubmit="return compteServeur(this);">
+
+                                                <div class="champ row">
+                                                    <label for="nom-perso-<?= $i ?>" class="col-form-label col-sm-3 col-md-4">Nom du joueur</label>
+                                                    <div id="div-nom-perso-<?= $i ?>" class="col-sm-9 col-md-8">
+                                                        <input type="text" id="nom-perso-<?= $i ?>" name="nom_perso" class="form-control" placeholder="Joueur" value="<?= (isset($_POST["nom_perso"]) && !$action && (isset($_GET["id"]) && $_GET["id"] == $info_serveur["id_info_serveur"]))?$_POST["nom_perso"]:$info_serveur["nom_perso"] ?>">
+                                                        <?= (isset($_GET["id"]) && $_GET["id"] == $info_serveur["id_info_serveur"])?$msg_compte_nom_perso:"" ?>
+                                                    </div>
+                                                </div>
+
+                                                <div class="champ row"">
+                                                    <label for="nom-discord-<?= $i ?>" class="col-form-label col-sm-3 col-md-4">Nom Discord</label>
+                                                    <div id="div-non-discord-<?= $i ?>" class ="col-sm-9 col-md-8">
+                                                        <input type="text" id="nom-discord-<?= $i ?>" name="nom_discord" class="form-control" placeholder="Discord" value="<?= (isset($_POST["nom_discord"]) && !$action && (isset($_GET["id"]) && $_GET["id"] == $info_serveur["id_info_serveur"]))?$_POST["nom_discord"]:$info_serveur["nom_discord"] ?>">
+                                                        <?= (isset($_GET["id"]) && $_GET["id"] == $info_serveur["id_info_serveur"])?$msg_compte_nom_discord:"" ?>
+                                                    </div>
+                                                </div>
+
+                                                <div class="submit">
+                                                    <input type="submit" name ="valide_serveur" id="valide-serveur-<?= $i ?>" class="valide-serveur btn btn-success" value="Valider les modifications">
+                                                </div>
+
+                                            </form>
+
+
+                                            <!-- ----------------------------------------------------- -->
+                                            <!-- ----- PARTIE SUPPRESSION DU SERVEUR DE LA LISTE ----- -->
+                                            <!-- ----------------------------------------------------- -->   
+
+                                            <div class="block-supprimer row justify-content-center">
+
+                                                <button id="btn-supprimer-<?= $info_serveur["id_info_serveur"] ?>" class="btn-supprimer btn btn-danger w-auto"> Supprimer ce serveur </button>
+
+                                                <form action="<?= URL ?>gestion/compte.php?id=<?= $info_serveur["id_info_serveur"] ?>" method="post" id="form-supprimer-<?= $info_serveur["id_info_serveur"] ?>" class="initpad row justify-content-center" style="display:none;" onsubmit="return compteSupprimerServeur(this);">
+                                                    <div class="avertissement alert alert-danger text-center">
+                                                        <p>En poursuivant vous perdrez définitivement toutes vos offres sur ce serveur</p>
+                                                    </div>
+
+                                                    <div class="champ row">
+                                                        <label for="supprimer-<?= $i ?>" class="col-form-label col-sm-3 col-md-4">Nom du serveur</label>
+                                                        <div id="champ-supprimer-serveur-<?= $i ?>" class ="col-sm-9 col-md-8">
+                                                            <input type="text" id="supprimer-<?= $i ?>" name="supprimer" class=" form-control" placeholder="Recopiez le nom du serveur">
+                                                            <?= (isset($_GET["id"]) && $_GET["id"] == $info_serveur["id_info_serveur"])?$msg_compte_supprimer:"" ?>
+                                                        </div>
+                                                    </div>
+
+                                                    <div class="submit text-center w-100 row justify-content-center ">
+                                                        <div class="col-sm-3">
+                                                            <button type="button" id="btn-annuler-<?= $info_serveur["id_info_serveur"] ?>" class="btn-annuler btn btn-success mb-sm-0">Annuler</button>
+                                                        </div>
+                                                        <div class="col-sm-4">
+                                                            <input type="submit" id="valide-supprimer-<?= $i ?>" name ="valide_supprimer" class="btn btn-danger valide-supprimer" value="Supprimer ce serveur">
+                                                        </div>
+                                                    </div>
+                                                </form>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+<?php
+                            }
+?>
+                        </div>                
+<?php
+                    }else{
+?>
+                        <p class="alert alert-info"> Aucun serveur dans votre liste </p>
+<?php
+                    }
+?>
+                </div>
+            </div>
         </div>
     </div>
-
-
 
 <?php
 include '../inc/footer.inc.php';
