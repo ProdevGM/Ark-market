@@ -96,9 +96,11 @@ if(isset($_GET['action'])){
                 foreach($infos AS $indice => $valeur) {
                     if($indice != 'mdp') {
                         $_SESSION['utilisateur'][$indice] = $valeur;
-                        $_SESSION['serveur']['monnaie'] = "po"; // En attendant l'enregistrement de la monnaie dans la page du compte utilisateur
                     }				
                 }
+                $_SESSION['serveur']['monnaie'] = "po"; // En attendant l'enregistrement de la monnaie dans la page du compte utilisateur
+                $_SESSION['serveur']['id_serveur'] = "1"; // En attendant 
+
                 header('location:index.php');
             } else {
                 $msg .= '<div class="alert alert-danger mt-3">Erreur sur le pseudo et / ou le mot de passe !</div>';
@@ -115,8 +117,11 @@ include 'inc/header.inc.php';
 <main class="connexion">
     <div class="container">
 
+
+        <!-- ------------------------------ -->
+        <!-- ----- PARTIE INSCRIPTION ----- -->
+        <!-- ------------------------------ -->
 <?php
-        // Page relative à la création d'un compte
         if(isset($_GET["action"]) && $_GET['action'] == 'inscription'){
 ?>
             <div class="titre">
@@ -124,28 +129,38 @@ include 'inc/header.inc.php';
                 <p class="lead"><?= $msg ?></p>
             </div>
 
-            <div class="formulaire-insc col-md-8 col-lg-7 col-xl-6 mx-auto">
-                <form action="" method="POST" class="row justify-content-sm-end">
-                    <div class="col-12 row initmarg">
-                        <label class="col-sm-4" for="mail">Adresse e-mail</label>
-                        <input class ="col-sm-8" type="mail" name="mail" id="mail" value="<?= $mail ?>" placeholder="raptor@ark.com">
+            <div class="formulaire-inscription col-md-8 col-lg-7 col-xl-6 mx-auto">
+                <form action="" method="POST" class="row">
+                    <div class="champ row initmarg">
+                        <label class="col-form-label col-sm-3 col-md-4" for="mail">Adresse e-mail</label>
+                        <div class="col-sm-9 col-md-8">
+                            <input class="form-control col-sm-8" type="mail" name="mail" id="mail" value="<?= $mail ?>" placeholder="raptor@ark.com">
+                        </div>
                     </div>
-                    <div class="col-12 row initmarg">
-                        <label class="col-sm-4" for="mdp">Mot de passe</label>
-                        <input class ="col-sm-8" type="password" name="mdp" id="mdp" placeholder="azerty">
+                    <div class="champ row initmarg">
+                        <label class="col-form-label col-sm-3 col-md-4" for="mdp">Mot de passe</label>
+                        <div class="col-sm-9 col-md-8">
+                            <input class="form-control col-sm-8" type="password" name="mdp" id="mdp" placeholder="azerty">
+                        </div>
                     </div>
-                    <div class="col-12 row initmarg">
-                        <label class="col-sm-4" for="mdp-confirmation">Confirmez le mot de passe</label>
-                        <input class ="col-sm-8" type="password" name="mdp_confirmation" id="mdp-confirmation" placeholder="azerty">
+                    <div class="champ row initmarg">
+                        <label class="col-form-label col-sm-3 col-md-4" for="mdp-confirmation">Confirmez le mot de passe</label>
+                        <div class="col-sm-9 col-md-8">
+                            <input class="form-control col-sm-8" type="password" name="mdp_confirmation" id="mdp-confirmation" placeholder="azerty">
+                        </div>
                     </div>
-                    <div class="soumettre text-center text-sm-left col-12 col-sm-8">
-                        <button type="submit" name="creation" class="">Créer mon compte</button>
+                    <div class="text-center mt-4">
+                        <button type="submit" name="creation" class="btn btn-success rounded-0">Créer mon compte</button>
                     </div>
                 </form>
             </div>
 
+
+        <!-- ---------------------------- -->
+        <!-- ----- PARTIE CONNEXION ----- -->
+        <!-- ---------------------------- -->
 <?php
-        // Page relative à la connexion à son compte
+        // Page relative à la connexion de son compte
         }else{
 ?>
             <div class="titre">
@@ -153,19 +168,23 @@ include 'inc/header.inc.php';
                 <p class="lead"><?= $msg; ?></p>
             </div>
 
-            <div class="formulaire-co col-md-8 col-lg-7 col-xl-6 mx-auto">
-                <form method="POST" class="row justify-content-sm-end">
-                    <div class="col-12 row initmarg">
-                        <label class="col-sm-4" for="mail">Mail</label>
-                        <input class ="col-sm-8" type="mail" name="mail" id="mail" value="<?= $mail ?>" placeholder="raptor@ark.com">
+            <div class="formulaire-connexion col-md-8 col-lg-7 col-xl-6 mx-auto">
+                <form method="POST" class="row">
+                    <div class="champ row initmarg">
+                        <label class="col-form-label col-sm-3 col-md-4" for="mail">Mail</label>
+                        <div class="col-sm-9 col-md-8">
+                            <input class="form-control col-sm-8" type="mail" name="mail" id="mail" value="<?= $mail ?>" placeholder="raptor@ark.com">
+                        </div>
                     </div>
-                    <div class="col-12 row initmarg">
-                        <label class="col-sm-4" for="mdp">Mot de passe</label>
-                        <input class ="col-sm-8" type="password" autocomplete="off" name="mdp" id="mdp" placeholder="Votre mot de passe">
+                    <div class="champ row initmarg">
+                        <label class="col-form-label col-sm-3 col-md-4" for="mdp">Mot de passe</label>
+                        <div class="col-sm-9 col-md-8">
+                            <input class="form-control col-sm-8" type="password" autocomplete="off" name="mdp" id="mdp" placeholder="Votre mot de passe">
+                        </div>
                     </div>
-                    <div class="soumettre text-center text-sm-left col-12 col-sm-8">
-                        <button type="submit" name="connexion" class="">Connexion</button>
-                        <a href="<?= URL ?>connexion.php?oubli=1" class="text-center d-block d-sm-inline-block">Mot de passe oublié ?</a>
+                    <div class="text-center mt-4 position-relative">
+                        <button type="submit" name="connexion" class="btn btn-success rounded-0">Connexion</button>
+                        <a href="<?= URL ?>connexion.php?oubli=1" class="mdp-oublie text-center position-absolute end-0 bottom-0 d-block d-sm-inline-block">Mot de passe oublié ?</a>
                     </div>
                 </form>	
             </div>		

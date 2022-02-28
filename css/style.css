@@ -9,6 +9,7 @@ fieldset, form, label, legend, table, caption, tbody, tfoot, thead, tr, th, td, 
     box-sizing: border-box;
     color: black;
     text-transform: none;
+    text-decoration: none;
     list-style: none;
 }
 
@@ -35,9 +36,8 @@ html{
     text-align: center;
 }
 
-/* msg d'alerte sous les champs */
-.alerte-champ{ 
-    display: none;
+form .champ:nth-child(1n+2){
+    margin-top: 0.7rem;
 }
 
 
@@ -55,7 +55,7 @@ html{
 .navbar .navbar-toggler{width: 2.3rem; height: 1.375rem; cursor: pointer; position: relative;}
 .navbar .navbar-toggler .burger{width: 100%; height: 0.25rem; background-color: white; display: block; position: absolute; top: 50%; transform: translateY(-50%); border-radius: 5px;}
 .navbar .navbar-toggler .burger::before,
-.navbar .navbar-toggler .burger::after{content: ''; position: absolute; left: 0; width: 100%; height: 0.25rem; background-color: white; order-radius: 5px;}
+.navbar .navbar-toggler .burger::after{content: ''; position: absolute; left: 0; width: 100%; height: 0.25rem; background-color: white; border-radius: 5px;}
 .navbar .navbar-toggler .burger::before{transform: translateY(-0.55rem);}
 .navbar .navbar-toggler .burger::after{transform: translateY(0.55rem);}
 .navbar-toggler:focus{box-shadow: none;}
@@ -109,10 +109,9 @@ header{background-color: blue;}
 /* ---------- CONNEXION ---------- */
 /* ******************************* */
 
-.connexion form div {
-    padding: 0;
+.connexion .formulaire-connexion .mdp-oublie{
+    color: #6C757D;
 }
-
 
 
 /* ***************************** */
@@ -160,54 +159,79 @@ header{background-color: blue;}
 /* ---------- COMPTE ---------- */
 /* **************************** */
 
-.connexion .titre-partie{
-    margin: 2.5rem 0 1rem;
+.compte .block-formulaire .titre-partie{
+    margin: 2.5rem 0 1rem 0;
     font-size: 1.6rem;
     font-weight: bold;
 }
 
-.connexion form .champ:nth-child(1n+2){
-    margin-top: 0.7rem;
+.compte .block-formulaire .titre-partie p {
+    line-height: 2.43rem
 }
 
-/* .connexion form .champ label{
-    margin-bottom: 0.5rem;
-    font-size: 1.1rem;
-} */
+.compte .block-formulaire form .submit{
+    margin-top: 1.5rem;
+    width: auto;
+}
 
-.connexion form .champ .block-conditions-mdp{
+.compte .block-formulaire .block-profil form .champ #block-conditions-mdp{
     margin-top: 0.4rem;
     font-size: 0.9rem;
 }
 
-.connexion form .champ .block-conditions-mdp ul{
+.compte .block-formulaire .block-profil form .champ #block-conditions-mdp ul{
     margin-left: 2rem;
 }
 
-.connexion form .champ .block-conditions-mdp ul li{
+.compte .block-formulaire .block-profil form .champ #block-conditions-mdp ul li{
     list-style: circle;
 }
 
-.connexion form .submit{
-    margin-top: 1rem;
-    width: auto;
+.compte .block-formulaire .block-serveur .form-ajout-serveur{
+    margin-bottom: 2rem;
 }
 
-.connexion form .submit input[type="submit"]{
-    border-radius: 0px;
+.compte .block-formulaire .accordion .accordion-button .nom-serveur{
+    padding-right: 2rem;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
 }
 
-.connexion .accordion{
-    margin-top: 2rem;
+.compte .block-formulaire .accordion .accordion-body .block-supprimer .btn-supprimer{
+    margin-top: 1.5rem;
 }
 
+.compte .block-formulaire .accordion .accordion-body .block-supprimer form .avertissement{
+    margin-top: 1.5rem;
+}
+
+.compte .block-supprimer-compte .bouton-supprimer{
+    font-size: 0.9rem;
+    color: rgba(0, 0, 0, 0.7);
+    border: none;
+    background-color: white;
+}
+
+.compte .block-supprimer-compte #confirmation-supprimer-compte .avertissement{
+    font-size: 1.1rem;
+    color: #842029;
+}
+
+.compte .block-supprimer-compte #confirmation-supprimer-compte .avertissement p{
+    color: #842029;
+}
+
+.compte .block-supprimer-compte #confirmation-supprimer-compte .avertissement p{
+    color: #842029;
+}
 
 
 /* ----- Class JS ----- */
 
 .condition-mdp-valide{
     color: green;
-    list-style: disc !important;
+    font-weight: bold;
 }
 
 .condition-mdp-non-valide{
@@ -222,9 +246,6 @@ header{background-color: blue;}
 
 @media (min-width: 576px) /* sm */{
 
-    .connexion form .soumettre{
-        padding-left: 2rem;
-    }
 
 }
 

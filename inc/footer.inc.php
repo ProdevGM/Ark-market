@@ -25,7 +25,7 @@
     </script>
     <script src="<?php echo URL; ?>js/jquery.min.js"></script>
     <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
-    <script src="<?php echo URL; ?>js/bootstrap.bundle.min.js"></script>
+    <script src="<?php echo URL; ?>js/bootstrap.min.js"></script>
     <script src="<?php echo URL; ?>js/ark_market.js"></script>
 
 	</body>

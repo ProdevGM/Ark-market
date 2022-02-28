@@ -95,7 +95,7 @@ function analyse($variable, $taille, $message){
 } */
 
 
-/* vd($_SESSION); */
+vd($_SESSION);
 /* vd($_COOKIE); */
 vd($_POST);
 

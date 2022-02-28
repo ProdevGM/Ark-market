@@ -9,7 +9,7 @@
 
 
       <!-- Bootstrap core CSS -->
-      <link href="<?php echo URL; ?>css/bootstrap.rtl.min.css" rel="stylesheet">
+      <link href="<?php echo URL; ?>css/bootstrap.min.css" rel="stylesheet">
       <!-- OWN CSS -->
       <link href="<?php echo URL; ?>css/style.css" rel="stylesheet">
       <!-- FONT AWESOME -->

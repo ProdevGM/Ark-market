@@ -18,25 +18,31 @@ C/ produit.php
     3/ caractéristique créature : Si toutes inférieur à 300, on considérera qu'il s'agit de niveau
 
 D/ connexion.php
-    1/ Confirmation par mail de l'inscription
-    2/ Gérer mdp oublié
+    * Confirmation par mail de l'inscription
+    * Gérer mdp oublié
 
 E/ Compte.php
-    1/ Essayer de fusionner les requêtes relatives aux informations des serveur (nombre de produits...)
-    2/ Modal pour confirmation suppresion serveur
-    3/ Mail de validation pour la modification du mail
-    4/ Confirmation mdp : Voir pour ajouter le <p> en js au lieux de le laisser en display:none. Sinon doublou avec la variable PHP au dessus
+    * Mail de validation pour la modification du mail
+    * Ajout d'un serveur en Ajax pour affichage d'une liste de serveur potentiel déjà créé
+
+
 
 Rappel :
     - saccoche à viande des hyènes (pas une selle)
-    - gestion des plateforme
+    - gestion des plateformes
     - gestion de la couleur des produits en fonction de la qualité
 
 
 
 EN COURS :
-Page compte.php : Déplacer la suppresion du serveur après le formulaire donc rajouter un formulaire
 
 
 
 AMELIORATION :
+
+Compte.php
+    1/ Essayer de fusionner les requêtes relatives aux informations des serveur (nombre de produits...)
+    2/ Oeil pour possibilité de voir le mot de passe en clair
+
+
+

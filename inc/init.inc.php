@@ -18,6 +18,13 @@ $msg = "";
 $annonce_top = "";
 $controle_variables = true;
 
+?>
+<script>
+	var info_type_js,
+		supprimer,
+		ajout = true;
+</script>
+<?php
 
 // ouverture d'une session
 session_start();
@@ -31,11 +38,6 @@ define('SERVER_ROOT', $_SERVER['DOCUMENT_ROOT']);
 // Chemin racine du dossier du site depuis le serveur
 define('SITE_ROOT', '/ark-market/');
 
-?>
-<script>
-	var info_type_js;
-</script>
-<?php
 
 
 // Tableau qualité des produits (sauf créatures)
