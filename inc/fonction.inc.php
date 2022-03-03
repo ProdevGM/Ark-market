@@ -54,6 +54,31 @@ function analyse($variable, $taille, $message){
 		$msg .= "<p class=\"alerte-msg\"> $taille chiffres $message_limite_caractere</p>";
 }
 
+function couleurQualite($qualite){
+
+	switch ($qualite){
+
+		case "Commun" :
+			return "commun";
+		break;
+		case "Inhabituel" :
+			return "inhabituel";
+		break;
+		case "Rare" :
+			return "rare";
+		break;
+		case "Épique" :
+			return "epique";
+		break;
+		case "Légendaire" :
+			return "legendaire";
+		break;
+		case "Mythique" :
+			return "mythique";
+		break;
+	}
+}
+
 
 /* 	switch($tabSelect){
 		case 'tabCreature' :
@@ -95,9 +120,9 @@ function analyse($variable, $taille, $message){
 } */
 
 
-vd($_SESSION);
+/* vd($_SESSION); */
 /* vd($_COOKIE); */
-vd($_POST);
+/* vd($_POST); */
 
 
 

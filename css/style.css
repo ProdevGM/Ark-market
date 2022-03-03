@@ -7,10 +7,14 @@ fieldset, form, label, legend, table, caption, tbody, tfoot, thead, tr, th, td, 
 	font: inherit;
 	vertical-align: baseline;
     box-sizing: border-box;
-    color: black;
+    color: white;
     text-transform: none;
     text-decoration: none;
     list-style: none;
+}
+
+a:hover{
+    color: white;
 }
 
 html{
@@ -18,26 +22,143 @@ html{
     font-family: 'Karla', sans-serif;
 }
 
-.initmarg{
-    margin: 0;
+body{
+    background-color: #1B2838;
 }
 
-.initpad{
-    padding: 0;
-}
+.initmarg{margin: 0;}
+.initpad{padding: 0;}
 
 .gtitre{
-    margin: 2rem 0 1rem;
+    margin-bottom: 2rem;
     padding: 0.5rem 0;
-    box-shadow: 0px 0px 3px 1px rgba(0, 0, 0, 0.2);
+    background: linear-gradient(0.25turn, rgba(27, 40, 56, 1)5%, rgba(42, 62, 89, 1), rgba(27, 40, 56, 1)95%);
     border-radius: 5px;
     font-size: 1.2rem;
-    font-weight: bold;
     text-align: center;
 }
 
+.hover-bleu:hover{
+    color: #407999;
+    font-weight: bold;
+    box-shadow: 0px 0px 10px 1px #407999;
+    transition: 0.5s;
+    background: none;
+}
+
+.hover-bleu-bg:hover{
+    color: #407999;
+    font-weight: bold;
+    box-shadow: 0px 0px 10px 1px #407999;
+    transition: 0.5s;
+    background: none;
+    background-color: #1B2838!important;
+}
+
+.hover-rotation:hover{
+    transform: rotate(20deg);
+    transition: transform 0.5s;
+}
+
+.active-menu{
+    color: #407999;
+    font-weight: bold;
+    box-shadow: 0px 0px 10px 1px #407999;
+    background-color: #1B2838!important;
+}
+
+/* Design del'accordéon dans compte.php */
+.collapsed{
+    color: #407999;
+    box-shadow: 0px 0px 10px 1px #407999;
+    background-color: #1B2838!important;
+}
+
+.italic{font-style: italic;}
+
+/* margin-top au champ de formulaire sauf le premier */ 
 form .champ:nth-child(1n+2){
     margin-top: 0.7rem;
+}
+
+/* Concerne les conditions pour la validité du mot de passe (connexion.php et compte.php) */
+form .champ #block-conditions-mdp ul{
+    margin-left: 2rem;
+}
+form .champ #block-conditions-mdp ul li{
+    list-style: circle;
+}
+
+/* Code couleur en fonction de la qualité des objets */
+.commun{box-shadow: 0px 0px 13px 3px #B3B3B3; border: solid 0px #B3B3B3;}
+.inhabituel{box-shadow: 0px 0px 13px 3px #3F3; border: solid 0px #3F3;}
+.rare{box-shadow: 0px 0px 13px 3px #334CFF; border: solid 0px #334CFF;}
+.epique{box-shadow: 0px 0px 13px 3px #7F33ff; border: solid 0px #7F33ff;}
+.legendaire{box-shadow: 0px 0px 13px 3px #FFF319; border: solid 0px #FFF319;}
+.mythique{box-shadow: 0px 0px 13px 3px #0FF; border: solid 0px #0FF;}
+
+.textcommun{color: #B3B3B3;}
+.textinhabituel{color: #3F3;}
+.textrare{color: #334CFF;}
+.textepique{color: #7F33ff;}
+.textlegendaire{color: #FFF319;}
+.textmythique{color: #0FF;}
+
+
+
+/* *********************************** */
+/* ---------- DESIGN BURGER ---------- */
+/* *********************************** */
+
+.block-burger .burger{
+    padding: 0;
+    width: 46px;
+    height: 30px;
+    cursor: pointer;
+    position: relative;
+}
+
+.block-burger .burger span{
+    display: block;
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 100%;
+    height: 5px;
+    background-color: rgba(64, 121, 153);
+    transition: background-color 0.5s ease-in-out;
+    border-radius: 5px;
+}
+
+.block-burger .burger span::before,
+.block-burger .burger span::after{
+    content: '';
+    position: absolute;
+    width: 100%;
+    height: 5px;
+    background-color: rgba(64, 121, 153);
+    border-radius: 5px;
+    transition: transform 0.5s ease-in-out;
+}
+
+.block-burger .burger span::before{
+    transform: translateY(-12px);
+}
+
+.block-burger .burger span::after{
+    transform: translateY(12px);
+}
+
+.block-burger .burger.burger-active span{
+    background-color: transparent;
+}
+
+.block-burger .burger.burger-active span::before{
+    transform: translateY(0px) rotate(45deg);
+}
+
+.block-burger .burger.burger-active span::after{
+    transform: translateY(0px) rotate(-45deg);
 }
 
 
@@ -46,19 +167,187 @@ form .champ:nth-child(1n+2){
 /* ---------- HEADER ---------- */
 /* **************************** */
 
+header{
+    position: relative;
+    background-image: linear-gradient(rgba(27, 40, 56, 0), rgba(27, 40, 56, 0.9) 70%, rgba(27, 40, 56, 1) ),
+                  url("../image/site/header.jpg");
+    background-repeat: no-repeat;
+    background-size: 100%;
+    background-position: center;
+    
+}
 
 
-/* **************************** */
-/* ---------- BURGER ---------- */
-/* **************************** */
+    /* ----- NAV BURGER ----- */
 
-.navbar .navbar-toggler{width: 2.3rem; height: 1.375rem; cursor: pointer; position: relative;}
-.navbar .navbar-toggler .burger{width: 100%; height: 0.25rem; background-color: white; display: block; position: absolute; top: 50%; transform: translateY(-50%); border-radius: 5px;}
-.navbar .navbar-toggler .burger::before,
-.navbar .navbar-toggler .burger::after{content: ''; position: absolute; left: 0; width: 100%; height: 0.25rem; background-color: white; border-radius: 5px;}
-.navbar .navbar-toggler .burger::before{transform: translateY(-0.55rem);}
-.navbar .navbar-toggler .burger::after{transform: translateY(0.55rem);}
-.navbar-toggler:focus{box-shadow: none;}
+header .nav-burger{
+    position: fixed;
+    width: 100%;
+    padding: 1rem 0.4rem;
+    background-color: #1B2838;  
+    border-bottom: solid 1px #407999;
+    box-shadow: 0px 0px 10px  #407999;
+}
+
+header .nav-burger .logo img{
+    width: 5rem;
+}
+
+header .nav-burger .block-burger{
+    width: auto;
+}
+
+
+    /* ----- HEADER ----- */
+
+.container{
+    padding-top: 5rem /* A préciser une fois la navburger terminé (logo) */
+}
+
+header .block-logo{
+    padding: 3rem 0;
+}
+
+header .block-logo .logo a{
+    font-size: 2rem;
+    color: blue;
+}
+
+header .block-logo .logo span.ark{
+    font-size: 3rem;
+    color: red;
+}
+
+header .block-serveur{
+    padding: 1.5rem;
+    border-bottom: solid 1px #407999;
+    box-shadow: 0px 0px 10px #407999;
+    border-top-left-radius: 5px;
+    border-top-right-radius: 5px;
+    border: solid 1px #407999;
+}
+
+header .block-serveur .block-lien{
+    width: auto;
+}
+header .block-serveur .block-nom{
+    padding: 0;
+}
+header .block-serveur .block-nom .nom{
+    font-size: 2rem;
+    padding: 0.5rem 1rem;
+    border-radius: 5px;
+}
+
+header .block-serveur .block-lien a img{
+    width: 3rem;
+}
+
+header .top-droit{
+    position: fixed;
+    z-index: 10;
+    top: 1rem;
+    right: 1rem;
+    text-align: end;
+}
+
+header .top-droit .recherche button{
+    background: none;
+    border: none;
+}
+
+header .top-droit .recherche button svg{
+    padding: 0.2rem 0.8rem;
+    height: 2.3rem;
+    background-color: rgba(42, 62, 89, 1);
+    border-radius: 5px;
+}
+
+header .top-droit .recherche button svg:hover{
+    stroke: #407999;
+}
+
+header .top-droit .connexion a{
+    padding: 0.5rem 1rem;
+    vertical-align: middle;
+    font-size: 1.1rem;
+    background-color: rgba(42, 62, 89, 1);
+    border-radius: 5px;
+}
+
+
+/* ************************* */
+/* ---------- NAV ---------- */
+/* ************************* */
+
+    /* ----- NAV DESKTOP ----- */
+
+.menu nav .nav-desktop .block-menu{
+    position: relative;
+}
+
+.menu nav .nav-desktop .block-menu .logo{
+    padding: 0;
+    position: absolute;
+    top: 0;
+    left: 0;
+}
+
+.menu nav .nav-desktop .block-menu .logo img{
+    height: 100%;
+}
+
+.menu nav .nav-desktop .block-menu div{
+    padding: 0.5rem 1rem;
+    border-radius: 5px;
+}
+
+.menu nav .nav-desktop .block-menu .titre-menu{
+    background-color: #141e29;
+}
+
+.menu nav .nav-desktop .block-menu a{
+    padding: 0.5rem 1rem;
+    border-radius: 5px;
+}
+
+    /* ----- NAV MOBILE ----- */
+
+
+.menu .nav-mobile{
+    position: fixed;
+    top: 0;
+    right: 0;
+    z-index: 2;
+    width: 250px;
+    height: 100vh;
+    background-color: #111827;
+    transform: translateX(100%);
+    transition: 0.5s transform cubic-bezier(.79,.32,.2,1);
+}
+
+.menu .nav-mobile.active{
+    transform: initial;
+}
+
+.menu .nav-mobile.active{
+    display: block;
+}
+
+.menu .mobile-overlay{
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 1;
+    width: 100vw;
+    height: 100vh;
+    background-color: rgba(0, 0, 0, 0.6);
+    display: none;
+}
+
+.menu .mobile-overlay.active{
+    display: block;
+}
 
 
 
@@ -66,41 +355,90 @@ form .champ:nth-child(1n+2){
 /* ---------- ACCUEIL ---------- */
 /* ***************************** */
 
-header{background-color: blue;}
+.accueil{
+    margin-top: 3rem;
+}
+
+.accueil .block-section .section1 .block-categorie{
+    margin-bottom: 3rem;
+}
 
 .accueil .block-section .section1 .block-categorie .categorie{
-    display: inline-block;
-    padding: 0.2rem 0.5rem;
     margin: 0.6rem 0.5rem 0rem;
-    box-shadow: 0px 0px 3px 1px rgb(0 0 0 / 20%);
+    padding: 0.5rem 1rem;
+    font-size: 1.1rem;
     border-radius: 5px;
-    font-weight: bold;
+    background-color: rgba(42, 62, 89, 1);
 }
 
-.accueil .block-section .section2 .block{
-    margin: 0 0.1rem 0.7rem;
-    padding: 0.4rem 0;
-    box-shadow: 0px 0px 3px 1px rgba(0, 0, 0, 0.2);
+.accueil .block-section .section2 .block-offres{
+    margin-bottom: 3rem;
+}
+
+.accueil .block-section .section2 .block-offres .block{
+    margin-bottom: 1.5rem;
     border-radius: 5px;
 }
 
-.accueil .block-section .section2 .block div{
-    padding: 0 0.4rem;
+.accueil .block-section .section2 .block-offres .block .ss-block{
+    padding: 0.3rem 0.6rem;
 }
 
-.accueil .block-section .section2 .block div p{
+.accueil .block-section .section2 .block-offres .block .ss-block div p{
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
 }
 
-.accueil .block-section .section2 .block .block-caract-creature .detail img{
-    padding: 0;
-/*     width: 100%; */
+.accueil .block-section .section2 .block-offres .block .ss-block .block-caracteristique{
+    margin-top: 0.9rem;
 }
 
-.accueil .block-section .section2 .block .block-caract-creature .detail p{
+.accueil .block-section .section2 .block-offres .block .ss-block .block-caracteristique .detail{
+    padding: 0.2rem 0;
+}
+
+.accueil .block-section .section2 .block-offres .block .ss-block .block-caracteristique .detail img{
+    max-height: 25px!important;
+}
+
+.accueil .block-section .section2 .block-offres .block .ss-block .block-caracteristique .detail p{
+    text-align: center;
+}
+
+.accueil .block-section .section2 .block-offres .block .ss-block .block-nom,
+.accueil .block-section .section2 .block-offres .block .ss-block .block-prix{
+    margin: 0.5rem 0;
+}
+
+.accueil .block-section .section2 .block-offres .block .ss-block .block-qualite{
+    margin-top: 0.5rem;
+}
+
+
+.accueil .block-section .section2 .creature .block{
+    box-shadow: 0px 0px 13px 3px rgba(0, 0, 0, 0.53);
+}
+
+.accueil .block-section .section2 .block-offres .block .ss-block .block-illustration{
     padding: 0;
+}
+
+.accueil .block-section .section2 .block-offres .block .ss-block .block-illustration img{
+    margin: auto;
+    width: 100%;
+    height: fit-content;
+}
+
+.accueil .block-section .section2 .block-offres .block .ss-block .block-caract-creature .detail p{
+    padding: 0;
+}
+
+.accueil .block-section .section2 .block-offres .block .block-serveur{
+    background-color: #F50;
+    border-bottom-left-radius: 5px;
+    border-bottom-right-radius: 5px;
+    padding: 0.2rem 0;
 }
 
 
@@ -113,6 +451,19 @@ header{background-color: blue;}
     color: #6C757D;
 }
 
+.connexion .block-titre{
+    font-size: 2rem;
+    font-weight: bold;
+}
+
+.connexion .block-titre .titre-second{
+    color: #198754;
+}
+
+.connexion .block-titre .titre-second:hover{
+    color: #0d6efd;
+    transition: 0.5s;
+}
 
 /* ***************************** */
 /* ---------- GESTION ---------- */
@@ -179,23 +530,23 @@ header{background-color: blue;}
     font-size: 0.9rem;
 }
 
-.compte .block-formulaire .block-profil form .champ #block-conditions-mdp ul{
-    margin-left: 2rem;
-}
-
-.compte .block-formulaire .block-profil form .champ #block-conditions-mdp ul li{
-    list-style: circle;
-}
-
 .compte .block-formulaire .block-serveur .form-ajout-serveur{
     margin-bottom: 2rem;
 }
 
-.compte .block-formulaire .accordion .accordion-button .nom-serveur{
+.compte .block-formulaire .accordion .accordion-header .accordion-button{
+    background-color: #2a3e59;
+}
+
+.compte .block-formulaire .accordion .accordion-header .accordion-button .nom-serveur{
     padding-right: 2rem;
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
+}
+
+.compte .block-formulaire .accordion .accordion-body{
+    background-color: #1B2838;
 }
 
 .compte .block-formulaire .accordion .accordion-body .block-supprimer .btn-supprimer{
@@ -208,9 +559,9 @@ header{background-color: blue;}
 
 .compte .block-supprimer-compte .bouton-supprimer{
     font-size: 0.9rem;
-    color: rgba(0, 0, 0, 0.7);
+    color: white;
     border: none;
-    background-color: white;
+    background-color: transparent;
 }
 
 .compte .block-supprimer-compte #confirmation-supprimer-compte .avertissement{
@@ -230,13 +581,11 @@ header{background-color: blue;}
 /* ----- Class JS ----- */
 
 .condition-mdp-valide{
-    color: green;
-    font-weight: bold;
+    color: #198754;
 }
 
 .condition-mdp-non-valide{
-    color: red;
-    font-weight: bold;
+    color: #dc3545;
 }
 
 
@@ -251,9 +600,47 @@ header{background-color: blue;}
 
 @media (min-width: 768px) /* md */{
 
+    .accueil .block-section .section2 .block-offres .block .ss-block{
+        padding: 1rem 0.2rem;
+    }
+
+    .accueil .block-section .section2 .block-offres .block .ss-block .block-nom,
+    .accueil .block-section .section2 .block-offres .block .ss-block .block-prix{   
+        font-weight: bold;
+    }
+  
+    .accueil .block-section .section2 .block-offres .block .ss-block .block-nom{
+        font-size: 1.2rem;
+    }
+
+    .accueil .block-section .section2 .block-offres .block .ss-block .block-nom{
+        margin: 0 0 1rem;
+    }
+    .accueil .block-section .section2 .block-offres .block .ss-block .block-prix{
+        margin: 1rem 0 0
+    }
+    
+    
+    
+
 }
 
 @media (min-width: 992px) /* lg */{
+
+    header .block-serveur .block-nom{
+        width: auto;
+    }
+
+    .menu {
+        position: sticky;
+        top: 0;
+        background-color: #1B2838;  
+        padding: 1rem;
+        border-top: solid 1px #407999;
+        border-bottom: solid 1px #407999;
+        box-shadow: 0px 0px 10px  #407999;
+        font-size: 1.3rem;
+    }
 
     .accueil .block-section .section1 .block-categorie .categorie{
         margin-bottom: 1rem;
@@ -267,4 +654,20 @@ header{background-color: blue;}
 
 @media (min-width: 1400px) /* xxl */{
 
+    .gtitre{
+        margin-bottom: 3rem;
+    }
+
+    .accueil .block-section .section2 .block-offres .block .ss-block{
+        padding: 1.2rem 1.8rem;
+    }
+
+    .accueil .block-section .section2 .block-offres .block .ss-block .block-nom{
+        margin-bottom: 1.5rem;
+        font-size: 1.4rem;
+    }
+
+    .accueil .block-section .section2 .block-offres .block .ss-block .block-nom{
+        font-size: 1.1rem
+    }
 }

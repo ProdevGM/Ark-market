@@ -101,7 +101,7 @@ if(isset($_POST["valide_compte"]) || isset($_POST["valide_mdp"])
         $verif_mail = preg_match("/^[_a-z0-9-]+(\.[_a-z0-9-]+)*@[a-z0-9-]+(\.[a-z0-9-]+)*(\.[a-z]{2,})$/", $mail);
         if(empty($mail) || !$verif_mail){
             $controle_variables = false;
-            $msg_compte_mail .= "<p class=\"text-danger\"> Une adresse mail valide, c'est mieux ! </p>";
+            $msg_compte_mail = "<p class=\"text-danger\"> Une adresse mail valide, c'est mieux ! </p>";
             $annonce_top = "<p class=\"alert alert-danger\"> Au moinds l'un des champs est incorrect </p>";
         }
 
@@ -116,7 +116,7 @@ if(isset($_POST["valide_compte"]) || isset($_POST["valide_mdp"])
 
                 $controle_variables = false;
                 $msg_compte_mail = "<p class=\"text-danger\"> Cette adresse mail est déjà utilisée </p>";
-                $annonce_top = "Cette adresse mail est déjà utilisée";
+                $annonce_top = "<p class=\"alert alert-danger\"> Au moinds l'un des champs est incorrect </p>";
             
             }else{
 
@@ -488,9 +488,9 @@ if(isset($_POST["valide_compte"]) || isset($_POST["valide_mdp"])
 
     if($controle_variables){
 
-        $enregistrer->execute();
+        $retour = $enregistrer->execute();
 
-        if($enregistrer){
+        if($retour){
 
             $annonce_top = $pre_annonce_top;
             $action = true;
@@ -531,6 +531,7 @@ $PDO_info_serveur = $pdo->query("SELECT * FROM serveur s, info_serveur i
 
 
 include '../inc/header.inc.php';
+include '../inc/nav_etale.inc.php';
 ?>
 
 <main class="compte">
@@ -551,12 +552,12 @@ include '../inc/header.inc.php';
 
                     <form action="" method="post" class="initmarg row justify-content-center" onsubmit="return compteMail(this);">
 
-                        <div class="champ row" id="champ-mail">
+                        <div class="champ row">
                             <label for="mail" class="col-form-label col-sm-3 col-md-4">Adresse mail</label>
-                            <div class="col-sm-9 col-md-8">
+                            <div id="champ-mail" class="col-sm-9 col-md-8">
                                 <input type="text" id="mail" name="mail" class="form-control" placeholder="Mail" value="<?= $mail ?>">
+                                <?= $msg_compte_mail ?>
                             </div>
-                            <?= $msg_compte_mail ?>
                         </div>
                         <div class="submit">
                             <input type="submit" name ="valide_compte" class="btn btn-success rounded-0" value="Valider la modification ">
@@ -592,12 +593,12 @@ include '../inc/header.inc.php';
 
                         <div class="champ row">
                             <label for="mdp-confirme" class="col-form-label col-sm-3 col-md-4">Confirmation</label>
-                            <div class ="block-mdp-confirme col-sm-9 col-md-8">
+                            <div id="block-mdp-confirme" class ="col-sm-9 col-md-8">
                                 <input type="password" id="mdp-confirme" name="mdp_confirme" class="form-control" placeholder="Confirmez votre nouveau mot de passe">
                                 <?= $msg_compte_mdp_confirme ?>
                             </div>
                             <div class="d-none d-sm-block col-sm-3 col-md-4"></div>
-                            <div id="block-conditions-mdp" class="col-sm-9 col-md-6">
+                            <div id="block-conditions-mdp" class="mt-3 col-sm-9 col-md-6">
                                 <p>Conditions :</p>
                                 <ul>
                                     <li class="mdp-nbr-caractere">Entre 8 et 20 caractères</li>
@@ -727,7 +728,7 @@ include '../inc/header.inc.php';
 
                                 <div class="accordion-item">
                                     <h2 class="accordion-header" id="heading<?= $i ?>">
-                                        <button type="button" id="boutton-<?= $info_serveur["id_info_serveur"] ?>" class="accordion-button <?= ($i != 1)?"collapsed":""?>" data-bs-toggle="collapse" data-bs-target="#collapse-<?= $info_serveur["id_info_serveur"] ?>" aria-expanded="true" aria-controls="collapse-<?= $info_serveur["id_info_serveur"] ?>">
+                                        <button type="button" id="boutton-<?= $info_serveur["id_info_serveur"] ?>" class="accordion-button <?= ($i != 1)?"collapsed ":""?>" data-bs-toggle="collapse" data-bs-target="#collapse-<?= $info_serveur["id_info_serveur"] ?>" aria-expanded="true" aria-controls="collapse-<?= $info_serveur["id_info_serveur"] ?>">
                                             <div class="nom-serveur w-50">
                                                 <p id="nom-serveur-<?= $i ?>"> <?= $info_serveur["nom_serveur"] ?> </p>
                                             </div>

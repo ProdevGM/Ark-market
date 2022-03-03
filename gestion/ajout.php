@@ -12,7 +12,7 @@ if(!user_is_connect()){
 // Taille des champs (prends en compte le contrôle php et le maxlength)
 $taille_description = 500;
 $taille_monnaie = 20;
-$taille_prix = 10;
+$taille_prix = 6;
 $taille_caracteristique = 7;
 $taille_niveau = 3;
 $taille_armure = 4;
@@ -200,7 +200,7 @@ if(isset($_GET['action']) && ($_GET['action'] == 'creation' || $_GET['action'] =
                             && isset($_POST['monnaie'])
                             && isset($_POST['prix1'])){
                                
-        $id_serveur = $_SESSION['utilisateur']['id_serveur'];
+        $id_serveur = $_SESSION['serveur']['id_serveur'];
         $id_utilisateur = $_SESSION['utilisateur']['id_utilisateur'];
         
         $nom = ucfirst(trim($_POST['nom']));
@@ -580,11 +580,11 @@ if(isset($_GET['action']) && ($_GET['action'] == 'creation' || $_GET['action'] =
         }
 
         if(empty($msg)){
-/*             $creation->execute();
+            $creation->execute();
             if($creation)
                 header('location:http://ark-market/gestion/gestion.php?notif=creaModifTrue');
             else
-                header('location:http://ark-market/gestion/gestion.php?notif=creaModifFalse'); */
+                header('location:http://ark-market/gestion/gestion.php?notif=creaModifFalse');
         }
     }
 }
@@ -616,7 +616,7 @@ if(!empty($_GET['type'])){
 
 
 include '../inc/header.inc.php';
-include '../inc/nav.inc.php';
+include '../inc/nav_etale.inc.php';
 ?>
 
 <main class="ajout">

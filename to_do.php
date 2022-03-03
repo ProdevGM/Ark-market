@@ -34,15 +34,13 @@ Rappel :
 
 
 
-EN COURS :
+EN COURS : CSS index.php (nav-burger)
 
 
 
 AMELIORATION :
 
-Compte.php
-    1/ Essayer de fusionner les requêtes relatives aux informations des serveur (nombre de produits...)
-    2/ Oeil pour possibilité de voir le mot de passe en clair
+A/ nav.inc.php
 
-
+    * Fusionner le js pour le burger et l'overlay via un fonction
 

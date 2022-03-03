@@ -15,8 +15,8 @@ $pdo = new PDO($host_db, $login, $password, $options);
 
 // Création d'une variable destinée à afficher des messages utilisateur
 $msg = "";
-$annonce_top = "";
-$controle_variables = true;
+$annonce_top = ""; // Annonce en tête de page
+$controle_variables = true; // Contrôles des variables provenant de formulaire
 
 ?>
 <script>

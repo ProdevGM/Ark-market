@@ -87,9 +87,8 @@ $pdo_total_selle = $pdo->query($requete_total_selle);
 $pdo_total_arme = $pdo->query($requete_total_arme);
 $pdo_total_armure = $pdo->query($requete_total_armure);
 
-
 include '../inc/header.inc.php';
-include '../inc/nav.inc.php';
+include '../inc/nav_etale.inc.php';
 ?>
 
 <main class="gestion">
