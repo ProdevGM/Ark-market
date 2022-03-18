@@ -1,6 +1,8 @@
 # Ark-market
 
-PROJET EN COURS :
+Programmation en PHP procédural
+
+Projet avorté (refonte en POO) :
 
 http://ark-market.fr/
 
